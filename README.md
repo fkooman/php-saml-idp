@@ -45,21 +45,14 @@ Modify `config/config.php` to add your SP(s).
 
     $ php -S localhost:8080 -t web/
 
-# Manually Verifying Assertions
-
-    $ xmlsec1 verify \
-        --insecure \
-        --id-attr:ID "urn:oasis:names:tc:SAML:2.0:assertion:Assertion" \
-        --pubkey-cert-pem config/server.crt \
-        response.xml
-
 # TODO
 
 - LDAP auth support
-- simple pass integration
+- simple user/pass support
 - implement attribute support
 - secure cookies / sessions
 - error handling
-- make saml response assertion as simple as possible
+- make SAML response assertion as simple as possible
 - figure out if there are any (security) issues with parsing XML in 
   AuthnRequest
+- forceAuthn
