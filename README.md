@@ -14,6 +14,13 @@ Very simple SAML 2.0 IdP.
 - Does NOT verify AuthnRequest signatures
 - As simple as possible
 
+# Compatibility
+
+We tested with:
+
+- [simpleSAMLphp](https://simplesamlphp.org/)
+- [mod_auth_mellon](https://github.com/UNINETT/mod_auth_mellon/)
+
 # Configuration
 
 ## SP 
