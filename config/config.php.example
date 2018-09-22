@@ -1,0 +1,11 @@
+<?php
+
+return [
+    // list of registered SPs
+    'spList' => [
+        // the entityID of the SP
+        'https://vpn.tuxed.net/simplesaml/module.php/saml/sp/metadata.php/default-sp' => [
+            'AssertionConsumerServiceURL' => 'https://vpn.tuxed.net/simplesaml/module.php/saml/sp/saml2-acs.php/default-sp'
+        ],
+    ],
+];

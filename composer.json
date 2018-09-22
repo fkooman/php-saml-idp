@@ -1,0 +1,27 @@
+{
+    "authors": [
+        {
+            "email": "fkooman@tuxed.net",
+            "name": "Fran\u00e7ois Kooman"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "fkooman\\SAML\\IdP\\": "src/",
+            "fkooman\\SAML\\IdP\\Tests\\": "tests/"
+        }
+    },
+    "name": "fkooman/php-saml-idp",
+    "require": {
+        "ext-date": "*",
+        "ext-dom": "*",
+        "ext-hash": "*",
+        "ext-libxml": "*",
+        "ext-openssl": "*",
+        "ext-spl": "*",
+        "ext-zlib": "*",
+        "paragonie/constant_time_encoding": "^1|^2",
+        "paragonie/random_compat": ">=1",
+        "php": ">=5.4"
+    }
+}
