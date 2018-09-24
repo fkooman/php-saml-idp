@@ -60,7 +60,6 @@ try {
         $_SESSION['is_authenticated'] = true;
         $_SESSION['user_id'] = $authUser;
         $_SESSION['attribute_list'] = $config->get('simpleAuth')->get($authUser)->get('attributeList')->toArray();
-        $_SESSION['attribute_list']['urn:oid:0.9.2342.19200300.100.1.1'] = [$authUser];
     }
 
     // assume GET
