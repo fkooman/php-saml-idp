@@ -22,6 +22,7 @@
         "ext-zlib": "*",
         "paragonie/constant_time_encoding": "^1|^2",
         "paragonie/random_compat": ">=1",
-        "php": ">=5.4"
+        "php": ">=5.4",
+        "symfony/polyfill-php56": "^1.9"
     }
 }
