@@ -67,7 +67,8 @@ try {
 
     // XXX input validation of everything
     $samlRequest = \gzinflate(Base64::decode($request->getQueryParameter('SAMLRequest'), true));
-    $relayState = $request->getQueryParameter('RelayState');
+
+    $relayState = $request->hasQueryParameter('RelayState') ? $request->getQueryParameter('RelayState') : null;
 
     $dom = new DOMDocument();
     $dom->loadXML($samlRequest);
@@ -93,7 +94,11 @@ try {
     $responseXml = $samlResponse->getAssertion($authnRequestAcsUrl, $spEntityId, $request->getRootUri().'metadata.php', $authnRequestId);
     \error_log($responseXml);
 
-    echo \sprintf('<html><head><title>Foo</title></head><body><form method="post" action="%s"><input type="hidden" name="SAMLResponse" value="%s"><input type="hidden" name="RelayState" value="%s"><input type="submit"></form></body></html>', $authnRequestAcsUrl, Base64::encode($responseXml), $relayState);
+    if (null !== $relayState) {
+        echo \sprintf('<html><head><title>Foo</title></head><body><form method="post" action="%s"><input type="hidden" name="SAMLResponse" value="%s"><input type="hidden" name="RelayState" value="%s"><input type="submit" value="Go"></form></body></html>', $authnRequestAcsUrl, Base64::encode($responseXml), $relayState);
+    } else {
+        echo \sprintf('<html><head><title>Foo</title></head><body><form method="post" action="%s"><input type="hidden" name="SAMLResponse" value="%s"><input type="submit" value="Go"></form></body></html>', $authnRequestAcsUrl, Base64::encode($responseXml));
+    }
 } catch (Exception $e) {
     die($e->getMessage());
 }
