@@ -108,7 +108,7 @@ try {
         $samlResponse->setAttribute($k, $v);
     }
 
-    $responseXml = $samlResponse->getAssertion($authnRequestAcsUrl, $spEntityId, $request->getRootUri().'metadata.php', $authnRequestId);
+    $responseXml = $samlResponse->getAssertion($spConfig, $spEntityId, $request->getRootUri().'metadata.php', $authnRequestId);
     \error_log($responseXml);
 
     if (null !== $relayState) {

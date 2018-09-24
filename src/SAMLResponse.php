@@ -62,25 +62,25 @@ class SAMLResponse
     }
 
     /**
-     * @param string $acsUrl
+     * @param Config $spConfig
      * @param string $spEntityId
      * @param string $idpEntityId
      * @param string $id
      *
      * @return string
      */
-    public function getAssertion($acsUrl, $spEntityId, $idpEntityId, $id)
+    public function getAssertion(Config $spConfig, $spEntityId, $idpEntityId, $id)
     {
         $responseId = '_'.\bin2hex(\random_bytes(16));
         $assertionId = '_'.\bin2hex(\random_bytes(16));
-        $destinationAcs = $acsUrl; //'https://sp.example.org/saml/acs';
+        $destinationAcs = $spConfig->get('AssertionConsumerServiceURL');
         $transientNameId = '_'.\bin2hex(\random_bytes(16));
-        $inResponseTo = $id; //'_'.\bin2hex(\random_bytes(16));
+        $inResponseTo = $id;
         $issueInstant = $this->dateTime->format('Y-m-d\TH:i:s\Z');
         $assertionIssuer = $idpEntityId;
         $notBefore = $this->dateTime->sub(new DateInterval('PT3M'))->format('Y-m-d\TH:i:s\Z');
         $notOnOrAfter = $this->dateTime->add(new DateInterval('PT6M'))->format('Y-m-d\TH:i:s\Z');
-        $assertionAudience = $spEntityId; // //'https://sp.example.org/saml';
+        $assertionAudience = $spEntityId;
         $sessionIndex = '_'.\bin2hex(\random_bytes(16));
         $x509Certificate = $this->rsaCert->toKeyInfo();
         $responseTemplate = <<< EOF
@@ -159,7 +159,7 @@ EOF;
                 $notOnOrAfter,
                 $assertionAudience,
                 $x509Certificate,
-                $this->prepareAttributes(),
+                $this->prepareAttributes($spConfig->get('attributeReleasePolicy'), $spConfig->get('attributeMapping')->toArray()),
             ],
             $responseTemplate
         );
@@ -195,17 +195,33 @@ EOF;
     }
 
     /**
+     * @param array<string> $attributeReleaseList
+     * @param array<string> $attributeMapping
+     *
      * @return string
      */
-    private function prepareAttributes()
+    private function prepareAttributes(array $attributeReleaseList, array $attributeMapping)
     {
-        if (0 === \count($this->attributeList)) {
+        $filteredAttributeList = [];
+        foreach ($this->attributeList as $k => $v) {
+            if (\in_array($k, $attributeReleaseList, true)) {
+                $filteredAttributeList[$k] = $v;
+            }
+        }
+
+        foreach ($attributeMapping as $k => $v) {
+            if (\array_key_exists($k, $filteredAttributeList)) {
+                $filteredAttributeList[$k] = $filteredAttributeList[$v] = $filteredAttributeList[$k];
+            }
+        }
+
+        if (0 === \count($filteredAttributeList)) {
             return '';
         }
 
         $output = '<saml:AttributeStatement>';
 
-        foreach ($this->attributeList as $attributeName => $attributeValueList) {
+        foreach ($filteredAttributeList as $attributeName => $attributeValueList) {
             $attributeValueTemplate = <<< EOF
         <saml:AttributeValue xsi:type="xs:string">{{ATTRIBUTE_VALUE}}</saml:AttributeValue>
 EOF;
