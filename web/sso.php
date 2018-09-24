@@ -100,7 +100,7 @@ try {
         Certificate::fromFile($baseDir.'/config/server.crt')
     );
 
-    $samlResponse->setAttribute('uid', [$_SESSION['user_id']]);
+    $samlResponse->setAttribute('urn:mace:dir:attribute-def:uid', [$_SESSION['user_id']]);
 
     // add default attributes
     if ($config->has('defaultAttributes')) {
