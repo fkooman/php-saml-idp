@@ -104,4 +104,12 @@ class Config
 
         return $this->data[$key];
     }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return $this->data;
+    }
 }

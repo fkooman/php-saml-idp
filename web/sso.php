@@ -43,20 +43,24 @@ try {
     // make sure user is logged in
     \session_start();
 
+    $userAttributeList = [];
+
     if ('POST' === $request->getMethod()) {
         // attempt at logging in
         $authUser = $request->getPostParameter('authUser');
         $authPass = $request->getPostParameter('authPass');
 
-        if (!$config->get('plainAuth')->has($authUser)) {
+        if (!$config->get('simpleAuth')->has($authUser)) {
             throw new Exception('no such user');
         }
 
-        if (!\password_verify($authPass, $config->get('plainAuth')->get($authUser)->get('authPassHash'))) {
+        if (!\password_verify($authPass, $config->get('simpleAuth')->get($authUser)->get('authPassHash'))) {
             throw new Exception('invalid password');
         }
         $_SESSION['is_authenticated'] = true;
         $_SESSION['user_id'] = $authUser;
+        $_SESSION['attribute_list'] = $config->get('simpleAuth')->get($authUser)->get('attributeList')->toArray();
+        $_SESSION['attribute_list']['urn:oid:0.9.2342.19200300.100.1.1'] = [$authUser];
     }
 
     // assume GET
@@ -100,14 +104,16 @@ try {
         Certificate::fromFile($baseDir.'/config/server.crt')
     );
 
-    $samlResponse->setAttribute('urn:mace:dir:attribute-def:uid', [$_SESSION['user_id']]);
-
     // add default attributes
-    if ($config->has('defaultAttributes')) {
-        $defaultAttributes = $config->get('defaultAttributes');
-        foreach ($defaultAttributes as $da) {
-            $samlResponse->setAttribute($da['attributeName'], $da['attributeValueList']);
+    if ($config->has('defaultAttributeList')) {
+        $defaultAttributeList = $config->get('defaultAttributeList')->toArray();
+        foreach ($defaultAttributeList as $k => $v) {
+            $samlResponse->setAttribute($k, $v);
         }
+    }
+
+    foreach ($_SESSION['attribute_list'] as $k => $v) {
+        $samlResponse->setAttribute($k, $v);
     }
 
     $responseXml = $samlResponse->getAssertion($authnRequestAcsUrl, $spEntityId, $request->getRootUri().'metadata.php', $authnRequestId);

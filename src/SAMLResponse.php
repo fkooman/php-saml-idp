@@ -211,7 +211,7 @@ EOF;
 EOF;
 
             $attributeTemplate = <<< EOF
-    <saml:Attribute Name="{{ATTRIBUTE_NAME}}" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+    <saml:Attribute Name="{{ATTRIBUTE_NAME}}" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
         {{ATTRIBUTE_VALUES}}
     </saml:Attribute>
 EOF;
