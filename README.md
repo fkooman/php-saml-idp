@@ -4,15 +4,19 @@ Very simple SAML 2.0 IdP.
 
 # Features
 
-- PHP >= 5.4
+- PHP >= 5.4 (including latest 7 release)
 - **Only** IdP functionality
 - Metadata URL
 - HTTP POST binding for SAML Response
 - HTTP Redirect binding for AuthnRequest
 - Only supports RSA+SHA256 signed assertions
-- No encryption support
+- **No** encryption support
 - Does NOT verify AuthnRequest signatures
-- As simple as possible
+- As simple as possible (only compat / helper libraries)
+- Simple Authentication (static username/password)
+- LDAP Authentication
+- Attribute Mapping (from LDAP to e.g. OID)
+- Attribute Mapping / Filtering (per SP)
 
 # Compatibility
 
