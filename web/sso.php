@@ -40,6 +40,31 @@ try {
 
     $request = new Request($_SERVER, $_GET, $_POST);
 
+    // make sure user is logged in
+    \session_start();
+
+    if ('POST' === $request->getMethod()) {
+        // attempt at logging in
+        $authUser = $request->getPostParameter('authUser');
+        $authPass = $request->getPostParameter('authPass');
+
+        if (!$config->get('plainAuth')->has($authUser)) {
+            throw new Exception('no such user');
+        }
+
+        if ($authPass !== $config->get('plainAuth')->get($authUser)->get('authPass')) {
+            throw new Exception('invalid password');
+        }
+        $_SESSION['is_authenticated'] = true;
+    }
+
+    // assume GET
+    if (!\array_key_exists('is_authenticated', $_SESSION) || !$_SESSION['is_authenticated']) {
+        // auth
+        echo '<html><head><title>Foo</title></head><body><form method="post"><label>User <input type="text" name="authUser"></label><label>Password <input type="password" name="authPass"></label><input type="submit" value="Sign In"></form></body></html>';
+        exit(0);
+    }
+
     // XXX input validation of everything
     $samlRequest = \gzinflate(Base64::decode($request->getQueryParameter('SAMLRequest'), true));
     $relayState = $request->getQueryParameter('RelayState');

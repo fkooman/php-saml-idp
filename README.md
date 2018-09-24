@@ -48,7 +48,8 @@ Modify `config/config.php` to add your SP(s).
 # TODO
 
 - LDAP auth support
-- simple user/pass support
+- pretty authentication screen
+- JavaScript to submit SAML assertion back to SP
 - implement attribute support
 - secure cookies / sessions
 - error handling
@@ -56,3 +57,4 @@ Modify `config/config.php` to add your SP(s).
 - figure out if there are any (security) issues with parsing XML in 
   AuthnRequest
 - forceAuthn
+- WebSSO saml2int
