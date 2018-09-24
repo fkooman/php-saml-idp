@@ -56,4 +56,3 @@ Modify `config/config.php` to add your SP(s).
 - figure out if there are any (security) issues with parsing XML in 
   AuthnRequest
 - WebSSO saml2int
-- ARP per SP
