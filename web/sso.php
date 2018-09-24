@@ -46,24 +46,17 @@ try {
     $userAttributeList = [];
 
     if ('POST' === $request->getMethod()) {
-        // attempt at logging in
-        $authUser = $request->getPostParameter('authUser');
-        $authPass = $request->getPostParameter('authPass');
+        // determine auth mech
+        $authMethod = $config->get('authMethod');
+        $authMethodClass = '\\fkooman\\SAML\\IdP\\'.\ucfirst($authMethod);
+        $userAuthMethod = new $authMethodClass($config->get($authMethod));
 
-        if (!$config->get('simpleAuth')->has($authUser)) {
-            throw new Exception('no such user');
-        }
-
-        if (!\password_verify($authPass, $config->get('simpleAuth')->get($authUser)->get('authPassHash'))) {
-            throw new Exception('invalid password');
-        }
-        $_SESSION['is_authenticated'] = true;
-        $_SESSION['user_id'] = $authUser;
-        $_SESSION['attribute_list'] = $config->get('simpleAuth')->get($authUser)->get('attributeList')->toArray();
+        // set session crap
+        $_SESSION['userInfo'] = $userAuthMethod->authenticate($request->getPostParameter('authUser'), $request->getPostParameter('authPass'));
     }
 
     // assume GET
-    if (!\array_key_exists('is_authenticated', $_SESSION) || !$_SESSION['is_authenticated']) {
+    if (!\array_key_exists('userInfo', $_SESSION)) {
         // auth
         echo '<html><head><title>Foo</title></head><body><form method="post"><label>User <input type="text" name="authUser"></label><label>Password <input type="password" name="authPass"></label><input type="submit" value="Sign In"></form></body></html>';
         exit(0);
@@ -89,7 +82,7 @@ try {
     $forceAuthn = $authnRequest->getAttribute('ForceAuthn');
     if ('true' === $forceAuthn) {
         // force authentication of the user
-        unset($_SESSION['is_authenticated']);
+        unset($_SESSION['userInfo']);
         echo '<html><head><title>Foo</title></head><body><form method="post"><label>User <input type="text" name="authUser"></label><label>Password <input type="password" name="authPass"></label><input type="submit" value="Sign In"></form></body></html>';
         exit(0);
     }
@@ -103,15 +96,15 @@ try {
         Certificate::fromFile($baseDir.'/config/server.crt')
     );
 
-    // add default attributes
-    if ($config->has('defaultAttributeList')) {
-        $defaultAttributeList = $config->get('defaultAttributeList')->toArray();
-        foreach ($defaultAttributeList as $k => $v) {
+    // add common attributes
+    if ($config->has('commonAttributeList')) {
+        $commonAttributeList = $config->get('commonAttributeList')->toArray();
+        foreach ($commonAttributeList as $k => $v) {
             $samlResponse->setAttribute($k, $v);
         }
     }
 
-    foreach ($_SESSION['attribute_list'] as $k => $v) {
+    foreach ($_SESSION['userInfo']->getAttributes() as $k => $v) {
         $samlResponse->setAttribute($k, $v);
     }
 
