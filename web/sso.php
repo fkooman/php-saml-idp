@@ -52,7 +52,7 @@ try {
             throw new Exception('no such user');
         }
 
-        if ($authPass !== $config->get('plainAuth')->get($authUser)->get('authPass')) {
+        if (!\password_verify($authPass, $config->get('plainAuth')->get($authUser)->get('authPassHash'))) {
             throw new Exception('invalid password');
         }
         $_SESSION['is_authenticated'] = true;
