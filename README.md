@@ -20,6 +20,7 @@ We tested with:
 
 - [simpleSAMLphp](https://simplesamlphp.org/)
 - [mod_auth_mellon](https://github.com/UNINETT/mod_auth_mellon/)
+- [OpenConext](https://openconext.org/)
 
 # Configuration
 
@@ -56,3 +57,5 @@ Modify `config/config.php` to add your SP(s).
 - figure out if there are any (security) issues with parsing XML in 
   AuthnRequest
 - WebSSO saml2int
+- attribute mapping (per auth backend, e.g. map to OID variants)
+- ARP per SP
