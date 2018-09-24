@@ -9,6 +9,13 @@ return [
         ],
     ],
 
+//    'defaultAttributes' => [
+//        [
+//            'attributeName' => 'urn:mace:terena.org:attribute-def:schacHomeOrganization',
+//            'attributeValueList' => ['tuxed.net'],
+//        ]
+//    ],
+
     'plainAuth' => [
         'foo' => [
             'authPassHash' => '$2y$10$CKqxVMf4jdlRTWQokL09r./gAM//gpEPjQt9D2TISIydVVsOc39e2',

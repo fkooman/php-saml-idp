@@ -56,6 +56,7 @@ try {
             throw new Exception('invalid password');
         }
         $_SESSION['is_authenticated'] = true;
+        $_SESSION['user_id'] = $authUser;
     }
 
     // assume GET
@@ -71,7 +72,7 @@ try {
     $relayState = $request->hasQueryParameter('RelayState') ? $request->getQueryParameter('RelayState') : null;
 
     $dom = new DOMDocument();
-    $dom->loadXML($samlRequest);
+    $dom->loadXML($samlRequest, LIBXML_NONET | LIBXML_DTDLOAD | LIBXML_DTDATTR | LIBXML_COMPACT);
     foreach ($dom->childNodes as $child) {
         if (XML_DOCUMENT_TYPE_NODE === $child->nodeType) {
             throw new \InvalidArgumentException(
@@ -82,6 +83,14 @@ try {
 
     $authnRequest = $dom->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'AuthnRequest')->item(0);
     $authnRequestId = $authnRequest->getAttribute('ID');
+    $forceAuthn = $authnRequest->getAttribute('ForceAuthn');
+    if ('true' === $forceAuthn) {
+        // force authentication of the user
+        unset($_SESSION['is_authenticated']);
+        echo '<html><head><title>Foo</title></head><body><form method="post"><label>User <input type="text" name="authUser"></label><label>Password <input type="password" name="authPass"></label><input type="submit" value="Sign In"></form></body></html>';
+        exit(0);
+    }
+
     $spEntityId = $dom->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Issuer')->item(0)->nodeValue;
     $spConfig = $config->get('spList')->get($spEntityId);
     $authnRequestAcsUrl = $spConfig->get('AssertionConsumerServiceURL');
@@ -90,6 +99,16 @@ try {
         Key::fromFile($baseDir.'/config/server.key'),
         Certificate::fromFile($baseDir.'/config/server.crt')
     );
+
+    $samlResponse->setAttribute('uid', [$_SESSION['user_id']]);
+
+    // add default attributes
+    if ($config->has('defaultAttributes')) {
+        $defaultAttributes = $config->get('defaultAttributes');
+        foreach ($defaultAttributes as $da) {
+            $samlResponse->setAttribute($da['attributeName'], $da['attributeValueList']);
+        }
+    }
 
     $responseXml = $samlResponse->getAssertion($authnRequestAcsUrl, $spEntityId, $request->getRootUri().'metadata.php', $authnRequestId);
     \error_log($responseXml);

@@ -40,11 +40,25 @@ class SAMLResponse
     /** @var \DateTime */
     private $dateTime;
 
+    /** @var array<string, array<string>> */
+    private $attributeList = [];
+
     public function __construct(Key $rsaKey, Certificate $rsaCert)
     {
         $this->rsaKey = $rsaKey;
         $this->rsaCert = $rsaCert;
         $this->dateTime = new DateTime();
+    }
+
+    /**
+     * @param string        $attributeName
+     * @param array<string> $attributeValueList
+     *
+     * @return void
+     */
+    public function setAttribute($attributeName, array $attributeValueList)
+    {
+        $this->attributeList[$attributeName] = $attributeValueList;
     }
 
     /**
@@ -75,7 +89,7 @@ class SAMLResponse
     <samlp:Status>
         <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success" />
     </samlp:Status>
-    <saml:Assertion ID="{{ASSERTION_ID}}" Version="2.0" IssueInstant="{{ISSUE_INSTANT}}">
+    <saml:Assertion xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" ID="{{ASSERTION_ID}}" Version="2.0" IssueInstant="{{ISSUE_INSTANT}}">
         <saml:Issuer>{{ASSERTION_ISSUER}}</saml:Issuer>
         <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
             <ds:SignedInfo>
@@ -112,7 +126,7 @@ class SAMLResponse
             <saml:AuthnContext>
                 <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:Password</saml:AuthnContextClassRef>
             </saml:AuthnContext>
-        </saml:AuthnStatement>
+        </saml:AuthnStatement>{{ATTRIBUTES}}
     </saml:Assertion>
 </samlp:Response>
 EOF;
@@ -130,6 +144,7 @@ EOF;
                 '{{NOT_ON_OR_AFTER}}',
                 '{{ASSERTION_AUDIENCE}}',
                 '{{X509_CERTIFICATE}}',
+                '{{ATTRIBUTES}}',
             ],
             [
                 $responseId,
@@ -144,6 +159,7 @@ EOF;
                 $notOnOrAfter,
                 $assertionAudience,
                 $x509Certificate,
+                $this->prepareAttributes(),
             ],
             $responseTemplate
         );
@@ -176,5 +192,50 @@ EOF;
         $signatureValueElement->appendChild($responseDomDocument->createTextNode(Base64::encode($signedInfoSignature)));
 
         return $responseDomDocument->saveXML();
+    }
+
+    /**
+     * @return string
+     */
+    private function prepareAttributes()
+    {
+        if (0 === \count($this->attributeList)) {
+            return '';
+        }
+
+        $output = '<saml:AttributeStatement>';
+
+        foreach ($this->attributeList as $attributeName => $attributeValueList) {
+            $attributeValueTemplate = <<< EOF
+        <saml:AttributeValue xsi:type="xs:string">{{ATTRIBUTE_VALUE}}</saml:AttributeValue>
+EOF;
+
+            $attributeTemplate = <<< EOF
+    <saml:Attribute Name="{{ATTRIBUTE_NAME}}" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+        {{ATTRIBUTE_VALUES}}
+    </saml:Attribute>
+EOF;
+
+            $attributeValueListStr = '';
+            foreach ($attributeValueList as $attributeValue) {
+                $attributeValueListStr .= \str_replace('{{ATTRIBUTE_VALUE}}', $attributeValue, $attributeValueTemplate);
+            }
+
+            $output .= \str_replace(
+                [
+                    '{{ATTRIBUTE_NAME}}',
+                    '{{ATTRIBUTE_VALUES}}',
+                ],
+                [
+                    $attributeName,
+                    $attributeValueListStr,
+                ],
+                $attributeTemplate
+            );
+        }
+
+        $output .= '</saml:AttributeStatement>';
+
+        return $output;
     }
 }
