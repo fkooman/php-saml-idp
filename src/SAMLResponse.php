@@ -74,10 +74,10 @@ class SAMLResponse
      */
     public function getAssertion(Config $spConfig, $spEntityId, $idpEntityId, $id)
     {
-        $responseId = '_'.\bin2hex(\random_bytes(16));
-        $assertionId = '_'.\bin2hex(\random_bytes(16));
+        $responseId = '_'.\bin2hex(\random_bytes(32));
+        $assertionId = '_'.\bin2hex(\random_bytes(32));
         $destinationAcs = $spConfig->get('AssertionConsumerServiceURL');
-        $transientNameId = '_'.\bin2hex(\random_bytes(16));
+        $transientNameId = Base64::encode(\random_bytes(32));
         $inResponseTo = $id;
         $issueInstant = $this->dateTime->format('Y-m-d\TH:i:s\Z');
         $assertionIssuer = $idpEntityId;
