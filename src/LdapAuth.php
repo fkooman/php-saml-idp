@@ -49,7 +49,7 @@ class LdapAuth
         $userDn = \str_replace('{{UID}}', LdapClient::escapeDn($authUser), $this->config->get('userDnTemplate'));
         $this->ldapClient->bind($userDn, $authPass);
 
-        return new UserInfo($this->getAttributes($userDn));
+        return new UserInfo($authUser, $this->getAttributes($userDn));
     }
 
     /**

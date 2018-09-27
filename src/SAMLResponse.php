@@ -43,6 +43,9 @@ class SAMLResponse
     /** @var array<string, array<string>> */
     private $attributeList = [];
 
+    /** @var null|string $persistentId */
+    private $persistentId = null;
+
     public function __construct(Key $rsaKey, Certificate $rsaCert)
     {
         $this->rsaKey = $rsaKey;
@@ -159,7 +162,7 @@ EOF;
                 $notOnOrAfter,
                 $assertionAudience,
                 $x509Certificate,
-                $this->prepareAttributes($spConfig->get('attributeReleasePolicy'), $spConfig->get('attributeMapping')->toArray()),
+                $this->prepareAttributes($assertionIssuer, $assertionAudience, $spConfig->get('attributeReleasePolicy'), $spConfig->get('attributeMapping')->toArray()),
             ],
             $responseTemplate
         );
@@ -195,12 +198,24 @@ EOF;
     }
 
     /**
+     * @param string $persistentId
+     *
+     * @return void
+     */
+    public function setPersistentId($persistentId)
+    {
+        $this->persistentId = $persistentId;
+    }
+
+    /**
+     * @param string        $assertionIssuer
+     * @param string        $assertionAudience
      * @param array<string> $attributeReleaseList
      * @param array<string> $attributeMapping
      *
      * @return string
      */
-    private function prepareAttributes(array $attributeReleaseList, array $attributeMapping)
+    private function prepareAttributes($assertionIssuer, $assertionAudience, array $attributeReleaseList, array $attributeMapping)
     {
         $filteredAttributeList = [];
         foreach ($this->attributeList as $k => $v) {
@@ -220,6 +235,31 @@ EOF;
         }
 
         $output = '<saml:AttributeStatement>';
+
+        if (null !== $this->persistentId) {
+            // add EPTI
+            $eduPersonTargetedIdTemplate = <<< EOF
+<saml:Attribute Name="urn:oid:1.3.6.1.4.1.5923.1.1.1.10" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+    <saml:AttributeValue>
+        <saml:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent" NameQualifier="{{ASSERTION_ISSUER}}" SPNameQualifier="{{ASSERTION_AUDIENCE}}">{{PERSISTENT_ID}}</saml:NameID>
+    </saml:AttributeValue>
+</saml:Attribute>
+EOF;
+
+            $output .= \str_replace(
+                [
+                    '{{ASSERTION_ISSUER}}',
+                    '{{ASSERTION_AUDIENCE}}',
+                    '{{PERSISTENT_ID}}',
+                ],
+                [
+                    $assertionIssuer,
+                    $assertionAudience,
+                    $this->persistentId,
+                ],
+                $eduPersonTargetedIdTemplate
+            );
+        }
 
         foreach ($filteredAttributeList as $attributeName => $attributeValueList) {
             $attributeValueTemplate = <<< EOF

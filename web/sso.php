@@ -40,6 +40,8 @@ try {
 
     $request = new Request($_SERVER, $_GET, $_POST);
 
+    $idpEntityId = $request->getRootUri().'metadata.php';
+
     // make sure user is logged in
     \session_start();
 
@@ -88,6 +90,7 @@ try {
     }
 
     $spEntityId = $dom->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Issuer')->item(0)->nodeValue;
+    // XXX make sure we are the audience
     $spConfig = $config->get('spList')->get($spEntityId);
     $authnRequestAcsUrl = $spConfig->get('AssertionConsumerServiceURL');
 
@@ -104,12 +107,23 @@ try {
         }
     }
 
+    // XXX take this from configuration file!
+    $secretSalt = '8NwZS2Yudja6AzbsM5gQrH0fz24VLrCnptx20bAF8h4=';
+    $persistentId = Base64::encode(
+        \hash(
+            'sha256',
+            \sprintf('%s|%s|%s|%s', $secretSalt, $_SESSION['userInfo']->getAuthUser(), $idpEntityId, $spEntityId),
+            true
+        )
+    );
+    $samlResponse->setPersistentId($persistentId);
+
     foreach ($_SESSION['userInfo']->getAttributes() as $k => $v) {
         $samlResponse->setAttribute($k, $v);
     }
 
-    $responseXml = $samlResponse->getAssertion($spConfig, $spEntityId, $request->getRootUri().'metadata.php', $authnRequestId);
-    \error_log($responseXml);
+    $responseXml = $samlResponse->getAssertion($spConfig, $spEntityId, $idpEntityId, $authnRequestId);
+//    \error_log($responseXml);
 
     if (null !== $relayState) {
         echo \sprintf('<html><head><title>Foo</title></head><body><form method="post" action="%s"><input type="hidden" name="SAMLResponse" value="%s"><input type="hidden" name="RelayState" value="%s"><input type="submit" value="Go"></form></body></html>', $authnRequestAcsUrl, Base64::encode($responseXml), $relayState);

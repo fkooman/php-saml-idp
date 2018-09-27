@@ -50,6 +50,6 @@ class SimpleAuth
             throw new \Exception('invalid password');
         }
 
-        return new UserInfo($this->config->get($authUser)->get('attributeList')->toArray());
+        return new UserInfo($authUser, $this->config->get($authUser)->get('attributeList')->toArray());
     }
 }

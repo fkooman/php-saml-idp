@@ -26,12 +26,28 @@ namespace fkooman\SAML\IdP;
 
 class UserInfo
 {
+    /** @var string */
+    private $authUser;
+
     /** @var array<string, array<string>> */
     private $attributeList;
 
-    public function __construct(array $attributeList)
+    /**
+     * @param string                       $authUser
+     * @param array<string, array<string>> $attributeList
+     */
+    public function __construct($authUser, array $attributeList)
     {
+        $this->authUser = $authUser;
         $this->attributeList = $attributeList;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAuthUser()
+    {
+        return $this->authUser;
     }
 
     /**
