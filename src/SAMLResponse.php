@@ -83,6 +83,7 @@ class SAMLResponse
         $assertionIssuer = $idpEntityId;
         $notBefore = $this->dateTime->sub(new DateInterval('PT3M'))->format('Y-m-d\TH:i:s\Z');
         $notOnOrAfter = $this->dateTime->add(new DateInterval('PT6M'))->format('Y-m-d\TH:i:s\Z');
+        $sessionNotOnOrAfter = $this->dateTime->add(new DateInterval('PT8H'))->format('Y-m-d\TH:i:s\Z');
         $assertionAudience = $spEntityId;
         $sessionIndex = '_'.\bin2hex(\random_bytes(16));
         $x509Certificate = $this->rsaCert->toKeyInfo();
@@ -125,7 +126,7 @@ class SAMLResponse
                 <saml:Audience>{{ASSERTION_AUDIENCE}}</saml:Audience>
             </saml:AudienceRestriction>
         </saml:Conditions>
-        <saml:AuthnStatement AuthnInstant="{{ISSUE_INSTANT}}" SessionNotOnOrAfter="{{NOT_ON_OR_AFTER}}" SessionIndex="{{SESSION_INDEX}}">
+        <saml:AuthnStatement AuthnInstant="{{ISSUE_INSTANT}}" SessionNotOnOrAfter="{{SESSION_NOT_ON_OR_AFTER}}" SessionIndex="{{SESSION_INDEX}}">
             <saml:AuthnContext>
                 <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:Password</saml:AuthnContextClassRef>
             </saml:AuthnContext>
@@ -145,6 +146,7 @@ EOF;
                 '{{ASSERTION_ISSUER}}',
                 '{{NOT_BEFORE}}',
                 '{{NOT_ON_OR_AFTER}}',
+                '{{SESSION_NOT_ON_OR_AFTER}}',
                 '{{ASSERTION_AUDIENCE}}',
                 '{{X509_CERTIFICATE}}',
                 '{{ATTRIBUTES}}',
@@ -159,7 +161,7 @@ EOF;
                 $issueInstant,
                 $assertionIssuer,
                 $notBefore,
-                $notOnOrAfter,
+                $sessionNotOnOrAfter,
                 $assertionAudience,
                 $x509Certificate,
                 $this->prepareAttributes($assertionIssuer, $assertionAudience, $spConfig->get('attributeReleasePolicy'), $spConfig->get('attributeMapping')->toArray()),
