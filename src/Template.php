@@ -164,8 +164,10 @@ class Template
      */
     private function section($sectionName)
     {
+        // XXX we can just ignore the section if it is not there... should be alright?
         if (!\array_key_exists($sectionName, $this->sectionList)) {
-            throw new TemplateException(\sprintf('section "%s" does not exist', $sectionName));
+            return '';
+            //throw new TemplateException(\sprintf('section "%s" does not exist', $sectionName));
         }
 
         return $this->sectionList[$sectionName];
