@@ -29,6 +29,7 @@ use fkooman\SAML\IdP\Config;
 use fkooman\SAML\IdP\Http\Request;
 use fkooman\SAML\IdP\Key;
 use fkooman\SAML\IdP\SAMLResponse;
+use fkooman\SAML\IdP\Template;
 use ParagonIE\ConstantTime\Base64;
 
 \libxml_disable_entity_loader(true);
@@ -39,6 +40,8 @@ try {
     $config = Config::fromFile($baseDir.'/config/config.php');
 
     $request = new Request($_SERVER, $_GET, $_POST);
+
+    $tpl = new Template([\sprintf('%s/views', $baseDir)]);
 
     $idpEntityId = $request->getRootUri().'metadata.php';
 
@@ -60,13 +63,12 @@ try {
     // assume GET
     if (!\array_key_exists('userInfo', $_SESSION)) {
         // auth
-        echo '<html><head><title>Foo</title></head><body><form method="post"><label>User <input type="text" name="authUser"></label><label>Password <input type="password" name="authPass"></label><input type="submit" value="Sign In"></form></body></html>';
+        echo $tpl->render('auth');
         exit(0);
     }
 
     // XXX input validation of everything
     $samlRequest = \gzinflate(Base64::decode($request->getQueryParameter('SAMLRequest'), true));
-
     $relayState = $request->hasQueryParameter('RelayState') ? $request->getQueryParameter('RelayState') : null;
 
     $dom = new DOMDocument();
@@ -85,7 +87,8 @@ try {
     if ('true' === $forceAuthn) {
         // force authentication of the user
         unset($_SESSION['userInfo']);
-        echo '<html><head><title>Foo</title></head><body><form method="post"><label>User <input type="text" name="authUser"></label><label>Password <input type="password" name="authPass"></label><input type="submit" value="Sign In"></form></body></html>';
+        // auth
+        echo $tpl->render('auth');
         exit(0);
     }
 
@@ -125,11 +128,8 @@ try {
     $responseXml = $samlResponse->getAssertion($spConfig, $spEntityId, $idpEntityId, $authnRequestId);
 //    \error_log($responseXml);
 
-    if (null !== $relayState) {
-        echo \sprintf('<html><head><title>Foo</title></head><body><form method="post" action="%s"><input type="hidden" name="SAMLResponse" value="%s"><input type="hidden" name="RelayState" value="%s"><input type="submit" value="Go"></form></body></html>', $authnRequestAcsUrl, Base64::encode($responseXml), $relayState);
-    } else {
-        echo \sprintf('<html><head><title>Foo</title></head><body><form method="post" action="%s"><input type="hidden" name="SAMLResponse" value="%s"><input type="submit" value="Go"></form></body></html>', $authnRequestAcsUrl, Base64::encode($responseXml));
-    }
+    echo $tpl->render('submit', ['relayState' => $relayState, 'aclUrl' => $authnRequestAcsUrl, 'samlResponse' => Base64::encode($responseXml)]);
+    exit(0);
 } catch (Exception $e) {
     die($e->getMessage());
 }
