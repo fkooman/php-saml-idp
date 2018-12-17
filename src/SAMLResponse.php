@@ -161,6 +161,7 @@ EOF;
                 $issueInstant,
                 $assertionIssuer,
                 $notBefore,
+                $notOnOrAfter,
                 $sessionNotOnOrAfter,
                 $assertionAudience,
                 $x509Certificate,

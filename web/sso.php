@@ -128,7 +128,7 @@ try {
     $responseXml = $samlResponse->getAssertion($spConfig, $spEntityId, $idpEntityId, $authnRequestId);
 //    \error_log($responseXml);
 
-    echo $tpl->render('submit', ['relayState' => $relayState, 'aclUrl' => $authnRequestAcsUrl, 'samlResponse' => Base64::encode($responseXml)]);
+    echo $tpl->render('submit', ['relayState' => $relayState, 'acsUrl' => $authnRequestAcsUrl, 'samlResponse' => Base64::encode($responseXml)]);
     exit(0);
 } catch (Exception $e) {
     die($e->getMessage());
