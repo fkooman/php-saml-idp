@@ -20,6 +20,7 @@
         "ext-openssl": "*",
         "ext-spl": "*",
         "ext-zlib": "*",
+        "fkooman/secookie": "^2",
         "paragonie/constant_time_encoding": "^1|^2",
         "paragonie/random_compat": ">=1",
         "php": ">=5.4",

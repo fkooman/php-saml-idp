@@ -30,6 +30,8 @@ use fkooman\SAML\IdP\Http\Request;
 use fkooman\SAML\IdP\Key;
 use fkooman\SAML\IdP\SAMLResponse;
 use fkooman\SAML\IdP\Template;
+use fkooman\SeCookie\Cookie;
+use fkooman\SeCookie\Session;
 use ParagonIE\ConstantTime\Base64;
 
 \libxml_disable_entity_loader(true);
@@ -39,6 +41,15 @@ $baseDir = \dirname(__DIR__);
 try {
     $config = Config::fromFile($baseDir.'/config/config.php');
 
+    $session = new Session(
+        [],
+        new Cookie(
+            [
+               'SameSite' => 'Lax',
+            ]
+        )
+    );
+
     $request = new Request($_SERVER, $_GET, $_POST);
 
     $tpl = new Template([\sprintf('%s/views', $baseDir)]);
@@ -46,7 +57,7 @@ try {
     $idpEntityId = $request->getRootUri().'metadata.php';
 
     // make sure user is logged in
-    \session_start();
+//    \session_start();
 
     $userAttributeList = [];
 
@@ -57,11 +68,13 @@ try {
         $userAuthMethod = new $authMethodClass($config->get($authMethod));
 
         // set session crap
-        $_SESSION['userInfo'] = $userAuthMethod->authenticate($request->getPostParameter('authUser'), $request->getPostParameter('authPass'));
+        // XXX failing auth throws exception?
+        $session->set('userInfo', $userAuthMethod->authenticate($request->getPostParameter('authUser'), $request->getPostParameter('authPass')));
+        $session->regenerate(true);
     }
 
     // assume GET
-    if (!\array_key_exists('userInfo', $_SESSION)) {
+    if (!$session->has('userInfo')) {
         // auth
         echo $tpl->render('auth');
         exit(0);
@@ -86,11 +99,13 @@ try {
     $forceAuthn = $authnRequest->getAttribute('ForceAuthn');
     if ('true' === $forceAuthn) {
         // force authentication of the user
-        unset($_SESSION['userInfo']);
+        $session->delete('userInfo');
         // auth
         echo $tpl->render('auth');
         exit(0);
     }
+
+    $userInfo = $session->get('userInfo');
 
     $spEntityId = $dom->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Issuer')->item(0)->nodeValue;
     // XXX make sure we are the audience
@@ -115,13 +130,13 @@ try {
     $persistentId = Base64::encode(
         \hash(
             'sha256',
-            \sprintf('%s|%s|%s|%s', $secretSalt, $_SESSION['userInfo']->getAuthUser(), $idpEntityId, $spEntityId),
+            \sprintf('%s|%s|%s|%s', $secretSalt, $userInfo->getAuthUser(), $idpEntityId, $spEntityId),
             true
         )
     );
     $samlResponse->setPersistentId($persistentId);
 
-    foreach ($_SESSION['userInfo']->getAttributes() as $k => $v) {
+    foreach ($userInfo->getAttributes() as $k => $v) {
         $samlResponse->setAttribute($k, $v);
     }
 

@@ -52,9 +52,6 @@ Modify `config/config.php` to add your SP(s).
 
 # TODO
 
-- pretty authentication screen
-- JavaScript to submit SAML assertion back to SP
-- secure cookies / sessions
 - better persistent ID implementation, move salt to config
 - error handling
 - make SAML response assertion as simple as possible
