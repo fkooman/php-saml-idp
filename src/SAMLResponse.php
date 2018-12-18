@@ -233,7 +233,8 @@ EOF;
             }
         }
 
-        if (0 === \count($filteredAttributeList)) {
+        if (0 === \count($filteredAttributeList) && null === $this->persistentId) {
+            // no attributes, and no EPTID
             return '';
         }
 
