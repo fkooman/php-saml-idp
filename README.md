@@ -61,3 +61,4 @@ Modify `config/config.php` to add your SP(s).
 - WebSSO saml2int
 - consent screen (show attributes + values)
 - multi language support
+- implement logout
