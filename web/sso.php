@@ -26,6 +26,7 @@ require_once \dirname(__DIR__).'/vendor/autoload.php';
 
 use fkooman\SAML\IdP\Certificate;
 use fkooman\SAML\IdP\Config;
+use fkooman\SAML\IdP\ErrorHandler;
 use fkooman\SAML\IdP\Http\Request;
 use fkooman\SAML\IdP\Key;
 use fkooman\SAML\IdP\SAMLResponse;
@@ -36,7 +37,11 @@ use ParagonIE\ConstantTime\Base64;
 
 \libxml_disable_entity_loader(true);
 
+ErrorHandler::register();
+
 $baseDir = \dirname(__DIR__);
+
+$tpl = new Template([\sprintf('%s/views', $baseDir)]);
 
 try {
     $config = Config::fromFile($baseDir.'/config/config.php');
@@ -51,9 +56,6 @@ try {
     );
 
     $request = new Request($_SERVER, $_GET, $_POST);
-
-    $tpl = new Template([\sprintf('%s/views', $baseDir)]);
-
     $idpEntityId = $request->getRootUri().'metadata.php';
 
     // make sure user is logged in
@@ -146,5 +148,5 @@ try {
     echo $tpl->render('submit', ['relayState' => $relayState, 'acsUrl' => $authnRequestAcsUrl, 'samlResponse' => Base64::encode($responseXml)]);
     exit(0);
 } catch (Exception $e) {
-    die($e->getMessage());
+    echo $tpl->render('error', ['errorCode' => 500, 'errorMessage' => $e->getMessage()]);
 }
