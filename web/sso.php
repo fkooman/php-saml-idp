@@ -96,6 +96,11 @@ try {
         }
     }
 
+    // verify schema
+    if (false === $dom->schemaValidate(\sprintf('%s/schema/saml-schema-protocol-2.0.xsd', $baseDir))) {
+        throw new Exception('AuthnRequest schema validation failed');
+    }
+
     $authnRequest = $dom->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'AuthnRequest')->item(0);
     $authnRequestId = $authnRequest->getAttribute('ID');
     $forceAuthn = $authnRequest->getAttribute('ForceAuthn');
