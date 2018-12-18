@@ -35,8 +35,6 @@ use fkooman\SeCookie\Cookie;
 use fkooman\SeCookie\Session;
 use ParagonIE\ConstantTime\Base64;
 
-\libxml_disable_entity_loader(true);
-
 ErrorHandler::register();
 
 $baseDir = \dirname(__DIR__);
@@ -100,6 +98,9 @@ try {
     if (false === $dom->schemaValidate(\sprintf('%s/schema/saml-schema-protocol-2.0.xsd', $baseDir))) {
         throw new Exception('AuthnRequest schema validation failed');
     }
+
+    // after this point we don't want to load entities anymore!
+    \libxml_disable_entity_loader(true);
 
     $authnRequest = $dom->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'AuthnRequest')->item(0);
     $authnRequestId = $authnRequest->getAttribute('ID');
