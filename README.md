@@ -12,7 +12,7 @@ Very simple SAML 2.0 IdP.
 - Only supports RSA+SHA256 signed assertions
 - **No** encryption support
 - Does NOT verify AuthnRequest signatures
-- As simple as possible (only compat / helper libraries)
+- As simple as possible (only compat / helper libraries, **no** xmlseclibs)
 - Simple Authentication (static username/password)
 - LDAP Authentication
 - Attribute Mapping (from LDAP to e.g. OID)
@@ -53,6 +53,7 @@ Modify `config/config.php` to add your SP(s).
 # TODO
 
 - better persistent ID implementation, move salt to config
+- cleanup attribute release / mapping (what a mess!)
 - error handling
 - make SAML response assertion as simple as possible
 - figure out if there are any (security) issues with parsing XML in 
