@@ -165,7 +165,7 @@ EOF;
                 $sessionNotOnOrAfter,
                 $assertionAudience,
                 $x509Certificate,
-                $this->prepareAttributes($assertionIssuer, $assertionAudience, $spConfig->get('attributeReleasePolicy'), $spConfig->get('attributeMapping')->toArray()),
+                $this->prepareAttributes($assertionIssuer, $assertionAudience, $spConfig->get('attributeReleasePolicy')->toArray(), $spConfig->get('attributeMapping')->toArray()),
             ],
             $responseTemplate
         );
