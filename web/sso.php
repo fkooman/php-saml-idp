@@ -84,6 +84,7 @@ try {
     $samlRequest = \gzinflate(Base64::decode($request->getQueryParameter('SAMLRequest'), true));
     $relayState = $request->hasQueryParameter('RelayState') ? $request->getQueryParameter('RelayState') : null;
 
+    \libxml_disable_entity_loader(true);
     $dom = new DOMDocument();
     $dom->loadXML($samlRequest, LIBXML_NONET | LIBXML_DTDLOAD | LIBXML_DTDATTR | LIBXML_COMPACT);
     foreach ($dom->childNodes as $child) {
@@ -94,12 +95,10 @@ try {
         }
     }
 
-    // verify schema
+    \libxml_disable_entity_loader(false);
     if (false === $dom->schemaValidate(\sprintf('%s/schema/saml-schema-protocol-2.0.xsd', $baseDir))) {
         throw new Exception('AuthnRequest schema validation failed');
     }
-
-    // after this point we don't want to load entities anymore!
     \libxml_disable_entity_loader(true);
 
     $authnRequest = $dom->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'AuthnRequest')->item(0);
