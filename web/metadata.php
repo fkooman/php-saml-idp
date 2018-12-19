@@ -25,45 +25,36 @@
 require_once \dirname(__DIR__).'/vendor/autoload.php';
 
 use fkooman\SAML\IdP\Certificate;
+use fkooman\SAML\IdP\Config;
 use fkooman\SAML\IdP\Http\Request;
 use fkooman\SAML\IdP\Http\Response;
+use fkooman\SAML\IdP\Template;
 
 $baseDir = \dirname(__DIR__);
-$rsaCert = Certificate::fromFile($baseDir.'/config/server.crt');
-$keyInfo = $rsaCert->toKeyInfo();
 
-$metaDataTemplate = <<< EOF
-<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" entityID="{{ENTITY_ID}}">
-    <md:IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
-        <md:KeyDescriptor use="signing">
-            <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
-                <ds:X509Data>
-                    <ds:X509Certificate>{{X509_CERTIFICATE}}</ds:X509Certificate>
-                </ds:X509Data>
-            </ds:KeyInfo>
-        </md:KeyDescriptor>
-        <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</md:NameIDFormat>
-        <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="{{SSO_ENDPOINT}}"/>
-    </md:IDPSSODescriptor>
-</md:EntityDescriptor>
-EOF;
-
+$config = Config::fromFile($baseDir.'/config/config.php');
 $request = new Request($_SERVER, $_GET, $_POST);
 $entityId = $request->getRootUri().'metadata.php';
 $ssoUri = $request->getRootUri().'sso.php';
+$sloUri = $request->getRootUri().'logout.php';
 
-$metaDataDocument = \str_replace(
+$rsaCert = Certificate::fromFile($baseDir.'/config/server.crt');
+$keyInfo = $rsaCert->toKeyInfo();
+
+$tpl = new Template([$baseDir.'/views']);
+$metaDataDocument = $tpl->render(
+    'metadata',
     [
-        '{{ENTITY_ID}}',
-        '{{X509_CERTIFICATE}}',
-        '{{SSO_ENDPOINT}}',
-    ],
-    [
-        $entityId,
-        $keyInfo,
-        $ssoUri,
-    ],
-    $metaDataTemplate
+        'entityId' => $entityId,
+        'keyInfo' => $keyInfo,
+        'ssoUri' => $ssoUri,
+        'sloUri' => $sloUri,
+        'displayNameList' => $config->get('metaData')->get('displayNameList')->toArray(),
+        'logoList' => $config->get('metaData')->get('logoList')->toArray(),
+        'informationUrlList' => $config->get('metaData')->get('informationUrlList')->toArray(),
+        'technicalContact' => $config->get('metaData')->get('technicalContact'),
+        'idpScopeList' => $config->get('idpScopeList')->toArray(),
+    ]
 );
 
 $response = new Response(200, ['Content-Type' => 'application/samlmetadata+xml'], $metaDataDocument);

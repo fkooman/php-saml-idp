@@ -1,6 +1,31 @@
 <?php
 
 return [
+    // IdP Metadata
+    'metaData' => [
+        'displayNameList' => [
+            'en' => 'My IdP',
+            'nl' => 'Mijn IdP',
+        ],
+        'logoList' => [
+            'en' => [
+                // dummy 1x1 PNG logo as data URI
+                'logoWidth' => 1,
+                'logoHeight' => 1,
+                'logoUri' => 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA6fptVAAAACklEQVQIHWPoAAAAigCJeHTQWgAAAABJRU5ErkJggg==',
+            ],
+        ],
+        'informationUrlList' => [
+            'en' => 'https://example.org',
+        ],
+        'technicalContact' => 'technical@example.org',
+    ],
+
+    // for Pairwise Identifier / schacHomeOrg / EPTID
+    'idpScopeList' => [
+        'example.org',
+    ],
+
     // list of registered SPs
     'spList' => [
         // the entityID of the SP

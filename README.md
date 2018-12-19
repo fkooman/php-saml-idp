@@ -41,7 +41,7 @@ Modify `config/config.php` to add your SP(s).
         -subj "/CN=SAML IdP" \
         -x509 \
         -sha256 \
-        -newkey rsa:2048 \
+        -newkey rsa:3072 \
         -keyout "config/server.key" \
         -out "config/server.crt" \
         -days 2880
@@ -62,3 +62,5 @@ Modify `config/config.php` to add your SP(s).
 - consent screen (show attributes + values)
 - multi language support
 - implement logout
+- implement validuntil in metadata xml
+
