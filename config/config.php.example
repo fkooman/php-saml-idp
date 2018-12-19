@@ -28,73 +28,70 @@ return [
 
     // list of registered SPs
     'spList' => [
-        // the entityID of the SP
-        'https://vpn.tuxed.net/simplesaml/module.php/saml/sp/metadata.php/default-sp' => [
-            'AssertionConsumerServiceURL' => 'https://vpn.tuxed.net/simplesaml/module.php/saml/sp/saml2-acs.php/default-sp',
-            'attributeReleasePolicy' => [
-                // eduPersonEntitlement
-                'urn:oid:1.3.6.1.4.1.5923.1.1.1.7'
-            ],
-            'attributeMapping' => [
-                'urn:oid:1.3.6.1.4.1.5923.1.1.1.7' => 'eduPersonEntitlement'
+        // transient NameID
+        'https://sp.example.org/saml' => [
+            'acsUrl' => 'https://sp.example.org/acs',
+        ],
+
+        // eduPersonTargetedId & transient NameID
+        'https://sp.example.org/saml' => [
+            'acsUrl' => 'https://sp.example.org/acs',
+            'attributeRelease' => [
+                // eduPersonTargetedId
+                'urn:oid:1.3.6.1.4.1.5923.1.1.1.10',
             ],
         ],
 
-//        // SURFconext
-//        'https://engine.surfconext.nl/authentication/sp/metadata' => [
-//            'AssertionConsumerServiceURL' => 'https://engine.surfconext.nl/authentication/sp/consume-assertion',
-//            'attributeReleasePolicy' => [
-//                // uid
-//                'urn:oid:0.9.2342.19200300.100.1.1',
-//                // displayName
-//                'urn:oid:2.16.840.1.113730.3.1.241',
-//                // mail
-//                'urn:oid:0.9.2342.19200300.100.1.3',
-//                // schacHomeOrganization
-//                'urn:oid:1.3.6.1.4.1.25178.1.2.9',
-//                // eduPersonEntitlement
-//                'urn:oid:1.3.6.1.4.1.5923.1.1.1.7',
-//            ],
-//            'attributeMapping' => [
-//                'urn:oid:0.9.2342.19200300.100.1.1' => 'urn:mace:dir:attribute-def:uid',
-//                'urn:oid:1.3.6.1.4.1.25178.1.2.9' => 'urn:mace:terena.org:attribute-def:schacHomeOrganization',
-//                'urn:oid:0.9.2342.19200300.100.1.3' => 'urn:mace:dir:attribute-def:mail',
-//                'urn:oid:2.16.840.1.113730.3.1.241' => 'urn:mace:dir:attribute-def:displayName',
-//            ],
-//        ],
-    ],
+        // mail & transient NameID
+        'https://sp.example.org/saml' => [
+            'acsUrl' => 'https://sp.example.org/acs',
+            'attributeRelease' => [
+                'urn:oid:0.9.2342.19200300.100.1.3',
+            ],
+            'attributeMapping' => [
+                // take the attribute "mail" from authentication backend and
+                // map it to OID variant that will be released
+                'mail' => 'urn:oid:0.9.2342.19200300.100.1.3',
+            ],
+        ],
 
-    'commonAttributeList' => [
-        // schacHomeOrganization
-        'urn:oid:1.3.6.1.4.1.25178.1.2.9' => ['example.org'],
+        // SURFconext
+        'https://engine.surfconext.nl/authentication/sp/metadata' => [
+            'acsUrl' => 'https://engine.surfconext.nl/authentication/sp/consume-assertion',
+            'attributeRelease' => [
+                'urn:mace:dir:attribute-def:uid',
+                'urn:mace:terena.org:attribute-def:schacHomeOrganization',
+                'urn:mace:dir:attribute-def:mail',
+                'urn:mace:dir:attribute-def:displayName',
+            ],
+            'attributeMapping' => [
+                'uid' => 'urn:mace:dir:attribute-def:uid',
+                'mail' => 'urn:mace:dir:attribute-def:mail',
+                'displayName' => 'urn:mace:dir:attribute-def:displayName',
+            ],
+            'staticAttributeList' => [
+                'urn:mace:terena.org:attribute-def:schacHomeOrganization' => ['example.org'],
+            ],
+        ],
     ],
 
     'authMethod' => 'simpleAuth',
 
+    // Simple Auth
     'simpleAuth' => [
         'foo' => [
             'authPassHash' => '$2y$10$CKqxVMf4jdlRTWQokL09r./gAM//gpEPjQt9D2TISIydVVsOc39e2',
             'attributeList' => [
-                // uid
-                'urn:oid:0.9.2342.19200300.100.1.1' => ['foo'],
-                // displayName
-                'urn:oid:2.16.840.1.113730.3.1.241' => ['Foo Bar'],
-                // mail
-                'urn:oid:0.9.2342.19200300.100.1.3' => ['foo@example.org'],
-                // eduPersonEntitlement
-                'urn:oid:1.3.6.1.4.1.5923.1.1.1.7' => ['urn:mace:dir:entitlement:common-lib-terms'],
-            ]
+                'uid' => ['foo'],
+                'displayName' => ['Foo Bar'],
+                'mail' => ['foo@example.org'],
+            ],
         ],
     ],
 
+    // LDAP Auth
     'ldapAuth' => [
         'ldapUri' => 'ldaps://ipa.example.org',
         'userDnTemplate' => 'uid={{UID}},cn=users,cn=accounts,dc=example,dc=org',
-        'attributeMapping' => [
-            'uid' => 'urn:oid:0.9.2342.19200300.100.1.1',
-            'displayName' => 'urn:oid:2.16.840.1.113730.3.1.241',
-            'mail' => 'urn:oid:0.9.2342.19200300.100.1.3',
-            'eduPersonEntitlement' => 'urn:oid:1.3.6.1.4.1.5923.1.1.1.7',
-        ],
     ],
 ];

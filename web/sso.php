@@ -117,16 +117,17 @@ try {
     $spEntityId = $dom->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Issuer')->item(0)->nodeValue;
     // XXX make sure we are the audience
     $spConfig = $config->get('spList')->get($spEntityId);
-    $authnRequestAcsUrl = $spConfig->get('AssertionConsumerServiceURL');
+    $authnRequestAcsUrl = $spConfig->get('acsUrl');
 
     $samlResponse = new SAMLResponse(
+        $tpl,
         Key::fromFile($baseDir.'/config/server.key'),
         Certificate::fromFile($baseDir.'/config/server.crt')
     );
 
     // add common attributes
     if ($config->has('commonAttributeList')) {
-        $commonAttributeList = $config->get('commonAttributeList')->toArray();
+        $commonAttributeList = $spConfig->get('staticAttributeList')->toArray();
         foreach ($commonAttributeList as $k => $v) {
             $samlResponse->setAttribute($k, $v);
         }
@@ -137,11 +138,12 @@ try {
     $persistentId = Base64::encode(
         \hash(
             'sha256',
+            // XXX we should bind this to some other identifier, not authuser!
             \sprintf('%s|%s|%s|%s', $secretSalt, $userInfo->getAuthUser(), $idpEntityId, $spEntityId),
             true
         )
     );
-    $samlResponse->setPersistentId($persistentId);
+    $samlResponse->setAttribute('urn:oid:1.3.6.1.4.1.5923.1.1.1.10', [$persistentId]);
 
     foreach ($userInfo->getAttributes() as $k => $v) {
         $samlResponse->setAttribute($k, $v);

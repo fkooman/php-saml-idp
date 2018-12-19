@@ -31,6 +31,9 @@ use ParagonIE\ConstantTime\Base64;
 
 class SAMLResponse
 {
+    /** @var Template */
+    private $tpl;
+
     /** @var Key */
     private $rsaKey;
 
@@ -43,11 +46,9 @@ class SAMLResponse
     /** @var array<string, array<string>> */
     private $attributeList = [];
 
-    /** @var null|string $persistentId */
-    private $persistentId = null;
-
-    public function __construct(Key $rsaKey, Certificate $rsaCert)
+    public function __construct(Template $tpl, Key $rsaKey, Certificate $rsaCert)
     {
+        $this->tpl = $tpl;
         $this->rsaKey = $rsaKey;
         $this->rsaCert = $rsaCert;
         $this->dateTime = new DateTime();
@@ -76,7 +77,7 @@ class SAMLResponse
     {
         $responseId = '_'.\bin2hex(\random_bytes(32));
         $assertionId = '_'.\bin2hex(\random_bytes(32));
-        $destinationAcs = $spConfig->get('AssertionConsumerServiceURL');
+        $destinationAcs = $spConfig->get('acsUrl');
         $transientNameId = Base64::encode(\random_bytes(32));
         $inResponseTo = $id;
         $issueInstant = $this->dateTime->format('Y-m-d\TH:i:s\Z');
@@ -87,87 +88,28 @@ class SAMLResponse
         $assertionAudience = $spEntityId;
         $sessionIndex = '_'.\bin2hex(\random_bytes(16));
         $x509Certificate = $this->rsaCert->toKeyInfo();
-        $responseTemplate = <<< EOF
-<samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ID="{{RESPONSE_ID}}" Version="2.0" IssueInstant="{{ISSUE_INSTANT}}" Destination="{{DESTINATION_ACS}}" InResponseTo="{{IN_RESPONSE_TO}}">
-    <saml:Issuer>{{ASSERTION_ISSUER}}</saml:Issuer>
-    <samlp:Status>
-        <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success" />
-    </samlp:Status>
-    <saml:Assertion xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" ID="{{ASSERTION_ID}}" Version="2.0" IssueInstant="{{ISSUE_INSTANT}}">
-        <saml:Issuer>{{ASSERTION_ISSUER}}</saml:Issuer>
-        <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
-            <ds:SignedInfo>
-                <ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
-                <ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
-                 <ds:Reference URI="#{{ASSERTION_ID}}">
-                    <ds:Transforms>
-                        <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
-                        <ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
-                    </ds:Transforms>
-                    <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
-                    <ds:DigestValue />
-                </ds:Reference>
-            </ds:SignedInfo>
-            <ds:SignatureValue />
-            <ds:KeyInfo>
-                <ds:X509Data>
-                    <ds:X509Certificate>{{X509_CERTIFICATE}}</ds:X509Certificate>
-                </ds:X509Data>
-            </ds:KeyInfo>
-        </ds:Signature>
-        <saml:Subject>
-            <saml:NameID SPNameQualifier="{{ASSERTION_AUDIENCE}}" Format="urn:oasis:names:tc:SAML:2.0:nameid-format:transient">{{TRANSIENT_NAME_ID}}</saml:NameID>
-            <saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
-                <saml:SubjectConfirmationData NotOnOrAfter="{{NOT_ON_OR_AFTER}}" Recipient="{{DESTINATION_ACS}}" InResponseTo="{{IN_RESPONSE_TO}}" />
-            </saml:SubjectConfirmation>
-        </saml:Subject>
-        <saml:Conditions NotBefore="{{NOT_BEFORE}}" NotOnOrAfter="{{NOT_ON_OR_AFTER}}">
-            <saml:AudienceRestriction>
-                <saml:Audience>{{ASSERTION_AUDIENCE}}</saml:Audience>
-            </saml:AudienceRestriction>
-        </saml:Conditions>
-        <saml:AuthnStatement AuthnInstant="{{ISSUE_INSTANT}}" SessionNotOnOrAfter="{{SESSION_NOT_ON_OR_AFTER}}" SessionIndex="{{SESSION_INDEX}}">
-            <saml:AuthnContext>
-                <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:Password</saml:AuthnContextClassRef>
-            </saml:AuthnContext>
-        </saml:AuthnStatement>{{ATTRIBUTES}}
-    </saml:Assertion>
-</samlp:Response>
-EOF;
-        $responseDocument = \str_replace(
+
+        $responseDocument = $this->tpl->render(
+            'response',
             [
-                '{{RESPONSE_ID}}',
-                '{{SESSION_INDEX}}',
-                '{{TRANSIENT_NAME_ID}}',
-                '{{DESTINATION_ACS}}',
-                '{{IN_RESPONSE_TO}}',
-                '{{ASSERTION_ID}}',
-                '{{ISSUE_INSTANT}}',
-                '{{ASSERTION_ISSUER}}',
-                '{{NOT_BEFORE}}',
-                '{{NOT_ON_OR_AFTER}}',
-                '{{SESSION_NOT_ON_OR_AFTER}}',
-                '{{ASSERTION_AUDIENCE}}',
-                '{{X509_CERTIFICATE}}',
-                '{{ATTRIBUTES}}',
-            ],
-            [
-                $responseId,
-                $sessionIndex,
-                $transientNameId,
-                $destinationAcs,
-                $inResponseTo,
-                $assertionId,
-                $issueInstant,
-                $assertionIssuer,
-                $notBefore,
-                $notOnOrAfter,
-                $sessionNotOnOrAfter,
-                $assertionAudience,
-                $x509Certificate,
-                $this->prepareAttributes($assertionIssuer, $assertionAudience, $spConfig->get('attributeReleasePolicy')->toArray(), $spConfig->get('attributeMapping')->toArray()),
-            ],
-            $responseTemplate
+                'responseId' => $responseId,
+                'sessionIndex' => $sessionIndex,
+                'transientNameId' => $transientNameId,
+                'destinationAcs' => $destinationAcs,
+                'inResponseTo' => $inResponseTo,
+                'assertionId' => $assertionId,
+                'issueInstant' => $issueInstant,
+                'assertionIssuer' => $assertionIssuer,
+                'notBefore' => $notBefore,
+                'noOnOrAfter' => $notOnOrAfter,
+                'sessionNotOnOrAfter' => $sessionNotOnOrAfter,
+                'assertionAudience' => $assertionAudience,
+                'x509Certificate' => $x509Certificate,
+                'attributeList' => $this->prepareAttributes(
+                    $spConfig->has('attributeRelease') ? $spConfig->get('attributeRelease')->toArray() : [],
+                    $spConfig->has('attributeMapping') ? $spConfig->get('attributeMapping')->toArray() : []
+                ),
+            ]
         );
 
         $responseDomDocument = new DOMDocument();
@@ -201,25 +143,21 @@ EOF;
     }
 
     /**
-     * @param string $persistentId
-     *
-     * @return void
-     */
-    public function setPersistentId($persistentId)
-    {
-        $this->persistentId = $persistentId;
-    }
-
-    /**
-     * @param string        $assertionIssuer
-     * @param string        $assertionAudience
      * @param array<string> $attributeReleaseList
      * @param array<string> $attributeMapping
      *
-     * @return string
+     * @return array<string,string|array<string>>
      */
-    private function prepareAttributes($assertionIssuer, $assertionAudience, array $attributeReleaseList, array $attributeMapping)
+    private function prepareAttributes(array $attributeReleaseList, array $attributeMapping)
     {
+        // apply mapping
+        foreach ($attributeMapping as $k => $v) {
+            if (\array_key_exists($k, $this->attributeList)) {
+                $this->attributeList[$v] = $this->attributeList[$k];
+            }
+        }
+
+        // only release the attributes we want to expose
         $filteredAttributeList = [];
         foreach ($this->attributeList as $k => $v) {
             if (\in_array($k, $attributeReleaseList, true)) {
@@ -227,75 +165,6 @@ EOF;
             }
         }
 
-        foreach ($attributeMapping as $k => $v) {
-            if (\array_key_exists($k, $filteredAttributeList)) {
-                $filteredAttributeList[$k] = $filteredAttributeList[$v] = $filteredAttributeList[$k];
-            }
-        }
-
-        if (0 === \count($filteredAttributeList) && null === $this->persistentId) {
-            // no attributes, and no EPTID
-            return '';
-        }
-
-        $output = '<saml:AttributeStatement>';
-
-        if (null !== $this->persistentId) {
-            // add EPTI
-            $eduPersonTargetedIdTemplate = <<< EOF
-<saml:Attribute Name="urn:oid:1.3.6.1.4.1.5923.1.1.1.10" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
-    <saml:AttributeValue>
-        <saml:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent" NameQualifier="{{ASSERTION_ISSUER}}" SPNameQualifier="{{ASSERTION_AUDIENCE}}">{{PERSISTENT_ID}}</saml:NameID>
-    </saml:AttributeValue>
-</saml:Attribute>
-EOF;
-
-            $output .= \str_replace(
-                [
-                    '{{ASSERTION_ISSUER}}',
-                    '{{ASSERTION_AUDIENCE}}',
-                    '{{PERSISTENT_ID}}',
-                ],
-                [
-                    $assertionIssuer,
-                    $assertionAudience,
-                    $this->persistentId,
-                ],
-                $eduPersonTargetedIdTemplate
-            );
-        }
-
-        foreach ($filteredAttributeList as $attributeName => $attributeValueList) {
-            $attributeValueTemplate = <<< EOF
-        <saml:AttributeValue xsi:type="xs:string">{{ATTRIBUTE_VALUE}}</saml:AttributeValue>
-EOF;
-
-            $attributeTemplate = <<< EOF
-    <saml:Attribute Name="{{ATTRIBUTE_NAME}}" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
-        {{ATTRIBUTE_VALUES}}
-    </saml:Attribute>
-EOF;
-
-            $attributeValueListStr = '';
-            foreach ($attributeValueList as $attributeValue) {
-                $attributeValueListStr .= \str_replace('{{ATTRIBUTE_VALUE}}', $attributeValue, $attributeValueTemplate);
-            }
-
-            $output .= \str_replace(
-                [
-                    '{{ATTRIBUTE_NAME}}',
-                    '{{ATTRIBUTE_VALUES}}',
-                ],
-                [
-                    $attributeName,
-                    $attributeValueListStr,
-                ],
-                $attributeTemplate
-            );
-        }
-
-        $output .= '</saml:AttributeStatement>';
-
-        return $output;
+        return $filteredAttributeList;
     }
 }
