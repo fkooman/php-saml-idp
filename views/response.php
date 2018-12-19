@@ -48,10 +48,10 @@
 <?php foreach ($attributeValueList as $attributeValue): ?>
 <?php if ('urn:oid:1.3.6.1.4.1.5923.1.1.1.10' === $attributeName): ?>
                 <saml:AttributeValue>
-                    <saml:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent" NameQualifier="<?=$this->e($assertionIssuer); ?>" SPNameQualifier="<?=$this->e($assertionAudience); ?>"><?=$this->e($attributeValue); ?></saml:NameID>
+                    <saml:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent" NameQualifier="<?=$this->e($assertionIssuer); ?>" SPNameQualifier="<?=$this->e($assertionAudience); ?>"><?=$this->batch($attributeValue, 'strip_tags'); ?></saml:NameID>
                 </saml:AttributeValue>
 <?php else: ?>
-                <saml:AttributeValue xsi:type="xs:string"><?=$this->e($attributeValue); ?></saml:AttributeValue>
+                <saml:AttributeValue xsi:type="xs:string"><?=$this->batch($attributeValue, 'strip_tags'); ?></saml:AttributeValue>
 <?php endif; ?>
 <?php endforeach; ?>
             </saml:Attribute>
