@@ -1,6 +1,6 @@
 body {
     font-family: sans-serif;
-    max-width: 20em;
+    max-width: 800px;
     margin: 0 auto;
 }
 
@@ -23,4 +23,16 @@ div.footer {
 
 div.footer a {
     color: #888;
+}
+
+table thead {
+    border-bottom: 2px solid #333;
+}
+
+table tbody td, table tbody th {
+    padding: 0.5em;
+}
+
+table tbody th {
+    text-align: left;
 }

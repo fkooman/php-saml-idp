@@ -144,7 +144,6 @@ try {
         )
     );
     $samlResponse->setAttribute('urn:oid:1.3.6.1.4.1.5923.1.1.1.10', [$persistentId]);
-
     foreach ($userInfo->getAttributes() as $k => $v) {
         $samlResponse->setAttribute($k, $v);
     }
@@ -152,7 +151,16 @@ try {
     $responseXml = $samlResponse->getAssertion($spConfig, $spEntityId, $idpEntityId, $authnRequestId);
 //    \error_log($responseXml);
 
-    echo $tpl->render('submit', ['relayState' => $relayState, 'acsUrl' => $authnRequestAcsUrl, 'samlResponse' => Base64::encode($responseXml)]);
+    echo $tpl->render(
+        'submit', [
+            'spEntityId' => $spEntityId,
+            'relayState' => $relayState,
+            'acsUrl' => $authnRequestAcsUrl,
+            'samlResponse' => Base64::encode($responseXml),
+            // XXX somehow improve this so it does not have to come from the object
+            'attributeList' => $samlResponse->getAttributeList($spConfig),
+        ]
+    );
     exit(0);
 } catch (Exception $e) {
     echo $tpl->render('error', ['errorCode' => 500, 'errorMessage' => $e->getMessage()]);

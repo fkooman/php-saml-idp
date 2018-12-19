@@ -66,6 +66,17 @@ class SAMLResponse
     }
 
     /**
+     * @return array<string,array<string>>
+     */
+    public function getAttributeList(Config $spConfig)
+    {
+        return $this->prepareAttributes(
+                    $spConfig->has('attributeRelease') ? $spConfig->get('attributeRelease')->toArray() : [],
+                    $spConfig->has('attributeMapping') ? $spConfig->get('attributeMapping')->toArray() : []
+        );
+    }
+
+    /**
      * @param Config $spConfig
      * @param string $spEntityId
      * @param string $idpEntityId
