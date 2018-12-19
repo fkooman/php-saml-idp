@@ -86,13 +86,6 @@ class LdapAuth
             $userAttributes[$attributeName] = $attributeValues;
         }
 
-        // do attribute mapping
-        foreach ($this->config->get('attributeMapping')->toArray() as $k => $v) {
-            if (\array_key_exists(\strtolower($k), $userAttributes)) {
-                $userAttributes[$v] = $userAttributes[\strtolower($k)];
-            }
-        }
-
         return $userAttributes;
     }
 }

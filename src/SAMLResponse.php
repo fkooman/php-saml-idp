@@ -157,7 +157,7 @@ class SAMLResponse
      * @param array<string> $attributeReleaseList
      * @param array<string> $attributeMapping
      *
-     * @return array<string,string|array<string>>
+     * @return array<string,array<string>>
      */
     private function prepareAttributes(array $attributeReleaseList, array $attributeMapping)
     {
