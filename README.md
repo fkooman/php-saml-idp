@@ -26,6 +26,15 @@ We tested with:
 - [mod_auth_mellon](https://github.com/UNINETT/mod_auth_mellon/)
 - [OpenConext](https://openconext.org/)
 
+# Installation
+
+Git clone the repository. Use [Composer](https://getcomposer.org/) to install
+the dependencies:
+
+    $ git clone https://git.tuxed.net/fkooman/php-saml-idp
+    $ cd php-saml-idp
+    $ composer install
+
 # Configuration
 
 ## SP 
@@ -34,7 +43,13 @@ We tested with:
 
 Modify `config/config.php` to add your SP(s).
 
-## Generate Certificates
+Generate a salt:
+    
+    $ php bin/generate-salt.php
+
+And use that for `secretSalt` in the configuration file.
+
+## Generate X.509 Certificates
 
     $ openssl req \
         -nodes \
