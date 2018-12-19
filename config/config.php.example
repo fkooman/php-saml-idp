@@ -67,7 +67,7 @@ return [
             'attributeMapping' => [
                 'uid' => 'urn:mace:dir:attribute-def:uid',
                 'mail' => 'urn:mace:dir:attribute-def:mail',
-                'displayName' => 'urn:mace:dir:attribute-def:displayName',
+                'cn' => 'urn:mace:dir:attribute-def:displayName',
             ],
             'staticAttributeList' => [
                 'urn:mace:terena.org:attribute-def:schacHomeOrganization' => ['example.org'],
@@ -83,7 +83,7 @@ return [
             'authPassHash' => '$2y$10$CKqxVMf4jdlRTWQokL09r./gAM//gpEPjQt9D2TISIydVVsOc39e2',
             'attributeList' => [
                 'uid' => ['foo'],
-                'displayName' => ['Foo Bar'],
+                'cn' => ['Foo Bar'],
                 'mail' => ['foo@example.org'],
             ],
         ],
