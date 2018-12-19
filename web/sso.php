@@ -126,9 +126,9 @@ try {
     );
 
     // add common attributes
-    if ($config->has('commonAttributeList')) {
-        $commonAttributeList = $spConfig->get('staticAttributeList')->toArray();
-        foreach ($commonAttributeList as $k => $v) {
+    if ($spConfig->has('staticAttributeList')) {
+        $staticAttributeList = $spConfig->get('staticAttributeList')->toArray();
+        foreach ($staticAttributeList as $k => $v) {
             $samlResponse->setAttribute($k, $v);
         }
     }
