@@ -53,7 +53,6 @@ Modify `config/config.php` to add your SP(s).
 # TODO
 
 - pairwise ID
-  - move salt to config
   - make attribute to use in hash configurable
   - implement "Subject Identifier Attributes Profile" next to EPTID
 - better error handling

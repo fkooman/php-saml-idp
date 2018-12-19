@@ -133,8 +133,11 @@ try {
         }
     }
 
-    // XXX take this from configuration file!
-    $secretSalt = '8NwZS2Yudja6AzbsM5gQrH0fz24VLrCnptx20bAF8h4=';
+    $secretSalt = $config->get('secretSalt');
+    if ('__REPLACE_ME__' === $secretSalt) {
+        throw new Exception('"secretSalt" not configured');
+    }
+
     $persistentId = Base64::encode(
         \hash(
             'sha256',

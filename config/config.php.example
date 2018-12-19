@@ -26,6 +26,10 @@ return [
         'example.org',
     ],
 
+    // secret salt used to generate pairwise/persistent identifiers
+    // use php-saml-idp-generate-salt to generate a suitable salt
+    'secretSalt' => '__REPLACE_ME__';
+
     // list of registered SPs
     'spList' => [
         // transient NameID
