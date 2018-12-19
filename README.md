@@ -52,13 +52,16 @@ Modify `config/config.php` to add your SP(s).
 
 # TODO
 
-- better persistent ID implementation, move salt to config
-- error handling
+- pairwise ID
+  - move salt to config
+  - make attribute to use in hash configurable
+  - implement "Subject Identifier Attributes Profile" next to EPTID
+- better error handling
+- use Response objects
 - make SAML response assertion as simple as possible
 - figure out if there are any (security) issues with parsing XML in 
   AuthnRequest
 - WebSSO saml2int
 - multi language support
-- implement logout
-- implement validuntil in metadata xml
-- implement pairwise ID
+- implement SLO
+- implement `validUntil` in metadata XML
