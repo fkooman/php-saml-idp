@@ -53,7 +53,7 @@ $metaDataDocument = $tpl->render(
         'logoList' => $config->get('metaData')->get('logoList')->toArray(),
         'informationUrlList' => $config->get('metaData')->get('informationUrlList')->toArray(),
         'technicalContact' => $config->get('metaData')->get('technicalContact'),
-        'idpScopeList' => $config->get('idpScopeList')->toArray(),
+        'identityScope' => $config->get('identityScope'),
     ]
 );
 

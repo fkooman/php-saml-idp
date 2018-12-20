@@ -34,6 +34,7 @@ use fkooman\SAML\IdP\Template;
 use fkooman\SeCookie\Cookie;
 use fkooman\SeCookie\Session;
 use ParagonIE\ConstantTime\Base64;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 
 ErrorHandler::register();
 
@@ -138,7 +139,7 @@ try {
         throw new Exception('"secretSalt" not configured');
     }
 
-    $persistentId = Base64::encode(
+    $persistentId = Base64UrlSafe::encodeUnpadded(
         \hash(
             'sha256',
             // XXX we should bind this to some other identifier, not authuser!
@@ -147,6 +148,12 @@ try {
         )
     );
     $samlResponse->setAttribute('urn:oid:1.3.6.1.4.1.5923.1.1.1.10', [$persistentId]);
+    $samlResponse->setAttribute(
+        'urn:oasis:names:tc:SAML:attribute:pairwise-id',
+        [
+            \sprintf('%s@%s', $persistentId, $config->get('identityScope')),
+        ]
+    );
     foreach ($userInfo->getAttributes() as $k => $v) {
         $samlResponse->setAttribute($k, $v);
     }

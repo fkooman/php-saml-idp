@@ -25,6 +25,6 @@
 
 require_once \dirname(__DIR__).'/vendor/autoload.php';
 
-use ParagonIE\ConstantTime\Base64;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 
-echo Base64::encode(\random_bytes(32)).PHP_EOL;
+echo Base64UrlSafe::encodeUnpadded(\random_bytes(32)).PHP_EOL;

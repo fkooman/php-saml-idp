@@ -28,6 +28,7 @@ use DateInterval;
 use DateTime;
 use DOMDocument;
 use ParagonIE\ConstantTime\Base64;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 
 class SAMLResponse
 {
@@ -89,7 +90,7 @@ class SAMLResponse
         $responseId = '_'.\bin2hex(\random_bytes(32));
         $assertionId = '_'.\bin2hex(\random_bytes(32));
         $destinationAcs = $spConfig->get('acsUrl');
-        $transientNameId = Base64::encode(\random_bytes(32));
+        $transientNameId = Base64UrlSafe::encodeUnpadded(\random_bytes(32));
         $inResponseTo = $id;
         $issueInstant = $this->dateTime->format('Y-m-d\TH:i:s\Z');
         $assertionIssuer = $idpEntityId;
