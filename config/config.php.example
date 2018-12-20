@@ -41,6 +41,8 @@ return [
             'attributeRelease' => [
                 // eduPersonTargetedId
                 'urn:oid:1.3.6.1.4.1.5923.1.1.1.10',
+                // Pairwise Subject Identifier
+                //'urn:oasis:names:tc:SAML:attribute:pairwise-id',
             ],
         ],
 
