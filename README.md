@@ -77,4 +77,3 @@ And use that for `secretSalt` in the configuration file.
 - WebSSO saml2int
 - multi language support
 - implement SLO
-- implement `validUntil` in metadata XML

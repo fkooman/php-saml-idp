@@ -41,6 +41,9 @@ $sloUri = $request->getRootUri().'logout.php';
 $rsaCert = Certificate::fromFile($baseDir.'/config/server.crt');
 $keyInfo = $rsaCert->toKeyInfo();
 
+$dateTime = new DateTime();
+$validUntil = \date_add(clone $dateTime, new DateInterval('PT24H'));
+
 $tpl = new Template([$baseDir.'/views']);
 $metaDataDocument = $tpl->render(
     'metadata',
@@ -54,6 +57,7 @@ $metaDataDocument = $tpl->render(
         'informationUrlList' => $config->get('metaData')->get('informationUrlList')->toArray(),
         'technicalContact' => $config->get('metaData')->get('technicalContact'),
         'identityScope' => $config->get('identityScope'),
+        'validUntil' => $validUntil->format('Y-m-d\TH:i:s\Z'),
     ]
 );
 
