@@ -17,6 +17,8 @@ Very simple SAML 2.0 IdP.
 - LDAP Authentication
 - Attribute Mapping (from LDAP to e.g. OID)
 - Attribute Mapping / Filtering (per SP)
+- Subject Identifier (pairwise-id) support
+- Consent Page
 
 # Compatibility
 
@@ -67,9 +69,7 @@ And use that for `secretSalt` in the configuration file.
 
 # TODO
 
-- pairwise ID
-  - make attribute to use in hash configurable
-  - implement "Subject Identifier Attributes Profile" next to EPTID
+- make attribute to use in hash configurable
 - better error handling
 - use Response objects
 - make SAML response assertion as simple as possible
