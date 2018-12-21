@@ -28,9 +28,14 @@ return [
     // use php-saml-idp-generate-salt to generate a suitable salt
     'secretSalt' => '__REPLACE_ME__',
 
+    // the attribute to use in the persistent identifier calculation
+    'persistentSourceAttribute' => 'uid',
+    //'persistentSourceAttribute' => 'ipaUniqueID',
+    //'persistentSourceAttribute' => 'uidNumber',
+
     // list of registered SPs
     'spList' => [
-        // transient NameID
+        // only transient NameID
         'https://sp.example.org/saml' => [
             'acsUrl' => 'https://sp.example.org/acs',
         ],

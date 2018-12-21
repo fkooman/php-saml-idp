@@ -139,11 +139,12 @@ try {
         throw new Exception('"secretSalt" not configured');
     }
 
+    $persistentSourceAttribute = $config->get('persistentSourceAttribute');
+
     $persistentId = Base64UrlSafe::encodeUnpadded(
         \hash(
             'sha256',
-            // XXX we should bind this to some other identifier, not authuser!
-            \sprintf('%s|%s|%s|%s', $secretSalt, $userInfo->getAuthUser(), $idpEntityId, $spEntityId),
+            \sprintf('%s|%s|%s|%s', $secretSalt, $persistentSourceAttribute, $idpEntityId, $spEntityId),
             true
         )
     );

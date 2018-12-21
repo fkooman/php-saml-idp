@@ -69,7 +69,6 @@ And use that for `secretSalt` in the configuration file.
 
 # TODO
 
-- make attribute to use in hash configurable
 - better error handling
 - use Response objects
 - make SAML response assertion as simple as possible
