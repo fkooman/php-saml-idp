@@ -36,7 +36,7 @@ $config = Config::fromFile($baseDir.'/config/config.php');
 $request = new Request($_SERVER, $_GET, $_POST);
 $entityId = $request->getRootUri().'metadata.php';
 $ssoUri = $request->getRootUri().'sso.php';
-$sloUri = $request->getRootUri().'logout.php';
+$sloUri = $request->getRootUri().'slo.php';
 
 $rsaCert = Certificate::fromFile($baseDir.'/config/server.crt');
 $keyInfo = $rsaCert->toKeyInfo();
