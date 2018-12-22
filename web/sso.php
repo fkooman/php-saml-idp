@@ -44,6 +44,7 @@ $tpl = new Template([\sprintf('%s/views', $baseDir)]);
 
 try {
     $config = Config::fromFile($baseDir.'/config/config.php');
+    $metadataConfig = Config::fromFile($baseDir.'/config/metadata.php');
 
     $session = new Session(
         [],
@@ -117,7 +118,7 @@ try {
 
     $spEntityId = $dom->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Issuer')->item(0)->nodeValue;
     // XXX make sure we are the audience
-    $spConfig = $config->get('spList')->get($spEntityId);
+    $spConfig = $metadataConfig->get($spEntityId);
     $authnRequestAcsUrl = $spConfig->get('acsUrl');
 
     $samlResponse = new SAMLResponse(

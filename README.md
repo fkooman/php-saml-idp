@@ -19,6 +19,7 @@ Very simple SAML 2.0 IdP.
 - Attribute Mapping / Filtering (per SP)
 - Subject Identifier (pairwise-id) support
 - Consent Page
+- Only "transient" NameID support
 
 # Compatibility
 
@@ -42,14 +43,16 @@ the dependencies:
 ## SP 
 
     $ cp config/config.php.example config/config.php
+    $ cp config/metadata.php.example config/metadata.php
 
-Modify `config/config.php` to add your SP(s).
+Modify `config/config.php` to configure the IdP, modify `config/metadata.php` 
+to add your SP(s).
 
 Generate a salt:
     
     $ php bin/generate-salt.php
 
-And use that for `secretSalt` in the configuration file.
+And use that for `secretSalt` in the `config/config.php` file.
 
 ## Generate X.509 Certificates
 
@@ -70,10 +73,11 @@ And use that for `secretSalt` in the configuration file.
 # TODO
 
 - better error handling
+- better input validation
 - use Response objects
 - make SAML response assertion as simple as possible
 - figure out if there are any (security) issues with parsing XML in 
-  AuthnRequest
-- WebSSO saml2int
+  AuthnRequest / LogoutRequest
+- WebSSO saml2int (encryption part is vague, what is "key transport"?!)
 - multi language support
 - implement SLO
