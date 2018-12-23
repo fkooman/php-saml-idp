@@ -28,6 +28,7 @@ use fkooman\SAML\IdP\Config;
 use fkooman\SAML\IdP\ErrorHandler;
 use fkooman\SAML\IdP\Http\Request;
 use fkooman\SAML\IdP\Http\Response;
+use fkooman\SAML\IdP\Key;
 use fkooman\SAML\IdP\Template;
 use fkooman\SeCookie\Cookie;
 use fkooman\SeCookie\Session;
@@ -149,6 +150,38 @@ try {
             'issuer' => $ourEntityId,
         ]
     );
+
+    $responseDomDocument = new DOMDocument();
+    $responseDomDocument->loadXML($responseXml);
+    $responseDomDocumentClone = clone $responseDomDocument;
+    $logoutResponseElement = $responseDomDocumentClone->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'LogoutResponse')->item(0);
+    $signatureElement = $responseDomDocumentClone->getElementsByTagNameNS('http://www.w3.org/2000/09/xmldsig#', 'Signature')->item(0);
+    $logoutResponseElement->removeChild($signatureElement);
+
+    $digestValue = Base64::encode(
+        \hash(
+            'sha256',
+            $logoutResponseElement->C14N(true, false),
+            true
+        )
+    );
+
+    $digestValueElement = $responseDomDocument->getElementsByTagNameNS('http://www.w3.org/2000/09/xmldsig#', 'DigestValue')->item(0);
+    $digestValueElement->appendChild($responseDomDocument->createTextNode($digestValue));
+    $signedInfoElement = $responseDomDocument->getElementsByTagNameNS('http://www.w3.org/2000/09/xmldsig#', 'SignedInfo')->item(0);
+
+    $rsaKey = Key::fromFile($baseDir.'/config/server.key');
+
+    \openssl_sign(
+        $signedInfoElement->C14N(true, false),
+        $signedInfoSignature,
+        $rsaKey->getPrivateKey(),
+        OPENSSL_ALGO_SHA256
+    );
+    $signatureValueElement = $responseDomDocument->getElementsByTagNameNS('http://www.w3.org/2000/09/xmldsig#', 'SignatureValue')->item(0);
+    $signatureValueElement->appendChild($responseDomDocument->createTextNode(Base64::encode($signedInfoSignature)));
+
+    $responseXml = $responseDomDocument->saveXML();
 
     $httpQuery = \http_build_query(
         [
