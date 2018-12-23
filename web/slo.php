@@ -68,16 +68,12 @@ try {
         )
     );
 
-//    echo '<pre>';
-//    \var_dump($_SESSION);
-//    echo '</pre>';
-
     $request = new Request($_SERVER, $_GET, $_POST);
+
+    // XXX we do NOT verify the signature here, we MUST according to saml2int spec
 
     // XXX input validation of everything
     $samlRequest = \gzinflate(Base64::decode($request->getQueryParameter('SAMLRequest'), true));
-    // XXX we need to do anything with RelayState here?!
-    //$relayState = $request->hasQueryParameter('RelayState') ? $request->getQueryParameter('RelayState') : null;
 
     \libxml_disable_entity_loader(true);
     $dom = new DOMDocument();
@@ -170,11 +166,8 @@ try {
         OPENSSL_ALGO_SHA256
     );
 
-    $httpQuery = \http_build_query(
+    $httpQuery .= '&'.\http_build_query(
         [
-            'SAMLResponse' => Base64::encode(\gzdeflate($responseXml)),
-            'RelayState' => $request->getQueryParameter('RelayState'),
-            'SigAlg' => 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
             'Signature' => Base64::encode($signedInfoSignature),
         ]
     );
