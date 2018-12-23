@@ -148,14 +148,12 @@ try {
             'destination' => $sloUrl,
             'inResponseTo' => $logoutRequestId,
             'issuer' => $ourEntityId,
-//            'spNameQualifier' => $spEntityId,
-//            'transientNameId' => $transientNameId,
         ]
     );
 
     $httpQuery = \http_build_query(
         [
-            'SAMLRequest' => Base64::encode(\gzdeflate($responseXml)),
+            'SAMLResponse' => Base64::encode(\gzdeflate($responseXml)),
             'RelayState' => $request->getQueryParameter('RelayState'),
             'SigAlg' => 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
         ]
