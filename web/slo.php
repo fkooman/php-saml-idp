@@ -148,8 +148,8 @@ try {
             'destination' => $sloUrl,
             'inResponseTo' => $logoutRequestId,
             'issuer' => $ourEntityId,
-            'spNameQualifier' => $spEntityId,
-            'transientNameId' => $transientNameId,
+//            'spNameQualifier' => $spEntityId,
+//            'transientNameId' => $transientNameId,
         ]
     );
 
