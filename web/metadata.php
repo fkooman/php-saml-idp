@@ -23,14 +23,13 @@
  */
 
 require_once \dirname(__DIR__).'/vendor/autoload.php';
+$baseDir = \dirname(__DIR__);
 
 use fkooman\SAML\IdP\Certificate;
 use fkooman\SAML\IdP\Config;
 use fkooman\SAML\IdP\Http\Request;
 use fkooman\SAML\IdP\Http\Response;
 use fkooman\SAML\IdP\Template;
-
-$baseDir = \dirname(__DIR__);
 
 $config = Config::fromFile($baseDir.'/config/config.php');
 $request = new Request($_SERVER, $_GET, $_POST);

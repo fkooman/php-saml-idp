@@ -23,6 +23,7 @@
  */
 
 require_once \dirname(__DIR__).'/vendor/autoload.php';
+$baseDir = \dirname(__DIR__);
 
 use fkooman\SAML\IdP\Config;
 use fkooman\SAML\IdP\ErrorHandler;
@@ -35,8 +36,6 @@ use fkooman\SeCookie\Session;
 use ParagonIE\ConstantTime\Base64;
 
 ErrorHandler::register();
-
-$baseDir = \dirname(__DIR__);
 
 $tpl = new Template([\sprintf('%s/views', $baseDir)]);
 

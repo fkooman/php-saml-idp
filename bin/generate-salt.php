@@ -24,6 +24,7 @@
  */
 
 require_once \dirname(__DIR__).'/vendor/autoload.php';
+$baseDir = \dirname(__DIR__);
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
 
