@@ -28,6 +28,7 @@ use fkooman\SAML\IdP\Config;
 use fkooman\SAML\IdP\ErrorHandler;
 use fkooman\SAML\IdP\Http\Request;
 use fkooman\SAML\IdP\Http\Response;
+use fkooman\SAML\IdP\Key;
 use fkooman\SAML\IdP\Template;
 use fkooman\SeCookie\Cookie;
 use fkooman\SeCookie\Session;
@@ -154,8 +155,30 @@ try {
         [
             'SAMLRequest' => Base64::encode(\gzdeflate($responseXml)),
             'RelayState' => $request->getQueryParameter('RelayState'),
+            'SigAlg' => 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
         ]
     );
+
+    $rsaKey = Key::fromFile($baseDir.'/config/server.key');
+
+    // calculate the signature over httpQuery
+    // add it to the query string
+    \openssl_sign(
+        $httpQuery,
+        $signedInfoSignature,
+        $rsaKey->getPrivateKey(),
+        OPENSSL_ALGO_SHA256
+    );
+
+    $httpQuery = \http_build_query(
+        [
+            'SAMLRequest' => Base64::encode(\gzdeflate($responseXml)),
+            'RelayState' => $request->getQueryParameter('RelayState'),
+            'SigAlg' => 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
+            'Signature' => Base64::encode($signedInfoSignature),
+        ]
+    );
+
     // XXX make sure it does not already have a "?" in the SLO URL!
     $sloUrl = $sloUrl.'?'.$httpQuery;
 
