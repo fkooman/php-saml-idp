@@ -20,6 +20,7 @@ Very simple SAML 2.0 IdP.
 - Subject Identifier (pairwise-id) support
 - Consent Page
 - Only "transient" NameID support
+- Logout (SLO)
 
 # Compatibility
 
@@ -74,10 +75,9 @@ And use that for `secretSalt` in the `config/config.php` file.
 
 - better error handling
 - better input validation
-- use Response objects
+- use `Http\Response` objects everywhere
 - make SAML response assertion as simple as possible
 - figure out if there are any (security) issues with parsing XML in 
   AuthnRequest / LogoutRequest
 - WebSSO saml2int (encryption part is vague, what is "key transport"?!)
 - multi language support
-- implement SLO

@@ -51,6 +51,7 @@ try {
         new Cookie(
             [
                'SameSite' => 'Lax',
+               'Secure' => false,       // XXX fix this!
             ]
         )
     );
@@ -103,10 +104,11 @@ try {
     }
     \libxml_disable_entity_loader(true);
 
+    // XXX validate it actually is an AuthnRequest!
     $authnRequest = $dom->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'AuthnRequest')->item(0);
     $authnRequestId = $authnRequest->getAttribute('ID');
     $forceAuthn = $authnRequest->getAttribute('ForceAuthn');
-    if ('true' === $forceAuthn) {
+    if ('true' === $forceAuthn || '1' === $forceAuthn) {
         // force authentication of the user
         $session->delete('userInfo');
         // auth
@@ -160,7 +162,10 @@ try {
         $samlResponse->setAttribute($k, $v);
     }
 
-    $responseXml = $samlResponse->getAssertion($spConfig, $spEntityId, $idpEntityId, $authnRequestId);
+    $transientNameId = Base64UrlSafe::encodeUnpadded(\random_bytes(32));
+    $session->set($spEntityId, ['transientNameId' => $transientNameId]);
+
+    $responseXml = $samlResponse->getAssertion($spConfig, $spEntityId, $idpEntityId, $authnRequestId, $transientNameId);
 //    \error_log($responseXml);
 
     echo $tpl->render(
@@ -173,7 +178,6 @@ try {
             'attributeList' => $samlResponse->getAttributeList($spConfig),
         ]
     );
-    exit(0);
 } catch (Exception $e) {
     echo $tpl->render('error', ['errorCode' => 500, 'errorMessage' => $e->getMessage()]);
 }
