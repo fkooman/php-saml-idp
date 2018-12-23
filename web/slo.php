@@ -52,12 +52,17 @@ try {
     $config = Config::fromFile($baseDir.'/config/config.php');
     $metadataConfig = Config::fromFile($baseDir.'/config/metadata.php');
 
+    $secureCookie = true;
+    if ($config->has('secureCookie')) {
+        $secureCookie = $config->get('secureCookie');
+    }
+
     $session = new Session(
         [],
         new Cookie(
             [
                'SameSite' => 'Lax',
-               'Secure' => false,       // XXX fix this!
+               'Secure' => $secureCookie,
             ]
         )
     );
