@@ -166,6 +166,7 @@ class SAMLResponse
             'urn:oid:2.16.840.1.113730.3.1.241' => 'displayName',
             'urn:oid:2.5.4.42' => 'givenName',
             'urn:oid:2.5.4.4' => 'sn',
+            'urn:oid:1.3.6.1.4.1.5923.1.1.1.6' => 'eduPersonPrincipalName',
         ];
     }
 
