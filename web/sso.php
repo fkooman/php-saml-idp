@@ -180,6 +180,7 @@ try {
             'samlResponse' => Base64::encode($responseXml),
             // XXX somehow improve this so it does not have to come from the object
             'attributeList' => $samlResponse->getAttributeList($spConfig),
+            'attributeMapping' => SAMLResponse::getAttributeMapping(),
         ]
     );
 } catch (Exception $e) {

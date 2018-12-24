@@ -12,7 +12,13 @@
         <tbody>
 <?php foreach ($attributeList as $attributeName => $attributeValueList): ?>
             <tr>
-                <th><?=$this->e($attributeName); ?></th>
+                <th>
+<?php if (\array_key_exists($attributeName, $attributeMapping)): ?>
+                <span title="<?=$this->e($attributeName); ?>"><?=$this->e($attributeMapping[$attributeName]); ?>
+<?php else: ?>
+                <?=$this->e($attributeName); ?>
+<?php endif; ?>
+                </th>
                 <td>
 <?php if (1 === \count($attributeValueList)): ?>
                     <?=$this->e($attributeValueList[0]); ?>

@@ -2,6 +2,7 @@ body {
     font-family: sans-serif;
     max-width: 800px;
     margin: 0 auto;
+    color: #333;
 }
 
 fieldset {
@@ -17,6 +18,7 @@ form label {
 }
 
 div.footer {
+    margin-top: 2em;
     text-align: center;
     font-size: 85%;
 }
@@ -25,14 +27,25 @@ div.footer a {
     color: #888;
 }
 
-table thead {
-    border-bottom: 2px solid #333;
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1em 0;
+    border: 1px solid #aaa;
 }
 
-table tbody td, table tbody th {
-    padding: 0.5em;
+tbody tr:nth-child(odd) {
+   background-color: #f4f4f4;
 }
 
-table tbody th {
+table th {
     text-align: left;
+}
+
+table thead th {
+    border-bottom: 1px solid #aaa;
+}
+
+table th, table td {
+    padding: 0.5em;
 }
