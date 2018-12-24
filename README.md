@@ -65,7 +65,7 @@ And use that for `secretSalt` in the `config/config.php` file.
         -newkey rsa:3072 \
         -keyout "config/server.key" \
         -out "config/server.crt" \
-        -days 2880
+        -days 3600
 
 # Run
 
@@ -78,3 +78,4 @@ And use that for `secretSalt` in the `config/config.php` file.
 - use `Http\Response` objects everywhere
 - WebSSO saml2int (encryption of assertion part is vague, what is "key transport"?!)
 - multi language support
+- major refactor and cleaning before a 1.0 release
