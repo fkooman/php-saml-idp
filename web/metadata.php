@@ -55,7 +55,7 @@ $metaDataDocument = $tpl->render(
         'logoList' => $config->get('metaData')->get('logoList')->toArray(),
         'informationUrlList' => $config->get('metaData')->get('informationUrlList')->toArray(),
         'technicalContact' => $config->get('metaData')->get('technicalContact'),
-        'identityScope' => $config->get('identityScope'),
+        'identifierScope' => $config->get('identifierScope'),
         'validUntil' => $validUntil->format('Y-m-d\TH:i:s\Z'),
     ]
 );

@@ -12,7 +12,7 @@
                 <mdui:InformationURL xml:lang="<?=$this->e($langCode); ?>"><?=$this->e($informationUrl); ?></mdui:InformationURL>
 <?php endforeach; ?>
             </mdui:UIInfo>
-            <shibmd:Scope regexp="false"><?=$this->e($identityScope); ?></shibmd:Scope>
+            <shibmd:Scope regexp="false"><?=$this->e($identifierScope); ?></shibmd:Scope>
         </md:Extensions>
         <md:KeyDescriptor use="signing">
             <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">

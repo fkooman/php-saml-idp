@@ -21,17 +21,19 @@ return [
         'technicalContact' => 'technical@example.org',
     ],
 
-    // Pairwise Subject Identifier Scope & <shibmd:Scope>
-    'identityScope' => 'example.org',
+    // Subject Identifier Scope & <shibmd:Scope>
+    // XXX maybe introduce @SCOPE@ variable for in in attributes
+    // XXX should this be multi value?! How to decide?
+    'identifierScope' => 'example.org',
 
-    // secret salt used to generate pairwise/persistent identifiers
+    // secret salt used to generate a subject identifier
     // use php bin/generate-salt.php to generate a suitable salt
     // XXX use a file for this, and do it automatically on package install
     'secretSalt' => '__REPLACE_ME__',
 
-    // the attribute to use in the persistent identifier calculation
-    'persistentSourceAttribute' => 'uid',
-    //'persistentSourceAttribute' => 'uidNumber',
+    // the attribute used to generate a subject identifier
+    'identifierSourceAttribute' => 'uid',
+    //'identifierSourceAttribute' => 'uidNumber',
 
     'authMethod' => 'simpleAuth',
 

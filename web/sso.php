@@ -146,12 +146,12 @@ try {
         throw new Exception('"secretSalt" not configured');
     }
 
-    $persistentSourceAttribute = $config->get('persistentSourceAttribute');
+    $identifierSourceAttribute = $config->get('identifierSourceAttribute');
 
     $persistentId = Base64UrlSafe::encodeUnpadded(
         \hash(
             'sha256',
-            \sprintf('%s|%s|%s|%s', $secretSalt, $persistentSourceAttribute, $idpEntityId, $spEntityId),
+            \sprintf('%s|%s|%s|%s', $secretSalt, $identifierSourceAttribute, $idpEntityId, $spEntityId),
             true
         )
     );
@@ -159,7 +159,7 @@ try {
     $samlResponse->setAttribute(
         'urn:oasis:names:tc:SAML:attribute:pairwise-id',
         [
-            \sprintf('%s@%s', $persistentId, $config->get('identityScope')),
+            \sprintf('%s@%s', $persistentId, $config->get('identifierScope')),
         ]
     );
     foreach ($userInfo->getAttributes() as $k => $v) {
