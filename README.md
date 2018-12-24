@@ -22,6 +22,12 @@ Very simple SAML 2.0 IdP.
 - Only "transient" NameID support
 - Logout (SLO)
 
+# Screenshots
+
+![Authentication](img/auth.png)
+
+![Consent](img/consent.png)
+
 # Compatibility
 
 We tested with:
