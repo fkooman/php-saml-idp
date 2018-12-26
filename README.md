@@ -85,7 +85,6 @@ And use that for `secretSalt` in the `config/config.php` file.
 - multi language support
 - major refactor and cleaning before a 1.0 release
 - support SPs with DisplayName in metadata
-- allow setting displayName in `metadata.php`
 - write SP import script
 - verify signature LogoutRequest coming from SP
 - support storing X.509 certificates from SPs for verifying signatures

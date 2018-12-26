@@ -2,7 +2,7 @@
 <?php $this->start('content'); ?>
 
     <p>
-        The following attributes will be released to the relying party <code><?=$this->e($spEntityId); ?></code>.
+        The following attributes will be released to the relying party <strong title="<?=$this->e($spEntityId); ?>"><?=$this->e($displayName); ?></strong>.
     </p>
 
     <table>

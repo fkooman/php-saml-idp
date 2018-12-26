@@ -32,6 +32,9 @@ return [
 
     // SURFconext
     'https://engine.surfconext.nl/authentication/sp/metadata' => [
+        'displayName' => [
+            'en' => 'SURFconext',
+        ],
         'acsUrl' => 'https://engine.surfconext.nl/authentication/sp/consume-assertion',
         'attributeRelease' => [
             'urn:mace:dir:attribute-def:uid',

@@ -5,6 +5,10 @@ body {
     color: #333;
 }
 
+code {
+    font-size: 125%;
+}
+
 fieldset {
     margin: 1em 0;
     border: 0;
@@ -30,8 +34,13 @@ div.footer a {
 table {
     width: 100%;
     border-collapse: collapse;
-    margin: 1em 0;
+    margin: 2em 0;
     border: 1px solid #aaa;
+}
+
+table ul {
+    margin: 0;
+    padding: 0 1em;
 }
 
 tbody tr:nth-child(odd) {

@@ -174,11 +174,19 @@ try {
     $transientNameId = Base64UrlSafe::encodeUnpadded(\random_bytes(32));
     $session->set($spEntityId, ['transientNameId' => $transientNameId]);
 
+    $displayName = $spEntityId;
+    if ($spConfig->has('displayName')) {
+        if ($spConfig->get('displayName')->has('en')) {
+            $displayName = $spConfig->get('displayName')->get('en');
+        }
+    }
+
     $responseXml = $samlResponse->getAssertion($spConfig, $spEntityId, $idpEntityId, $authnRequestId, $transientNameId);
     $response = new HtmlResponse(
         $tpl->render(
             'submit', [
                 'spEntityId' => $spEntityId,
+                'displayName' => $displayName,
                 'relayState' => $relayState,
                 'acsUrl' => $authnRequestAcsUrl,
                 'samlResponse' => Base64::encode($responseXml),
