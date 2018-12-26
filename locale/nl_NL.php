@@ -23,15 +23,15 @@
  */
 
 return [
+    'Approve' => 'Toestaan',
     'Attribute' => 'Attribuut',
-    'Confirm' => 'Bevestig',
     'Error' => 'Fout',
     //'Identity Provider' => '',
     'Password' => 'Wachtwoord',
     'Please sign in with your username and password.' => 'Log in met je gebruikersnaam en wachtwoord.',
     'Sign In' => 'Inloggen',
     'The credentials you provided were not correct.' => 'De inloggegevens zijn niet correct.',
-    'The following attributes will be released to <strong title="%spEntityId%">%displayName%</strong>.' => 'De volgende attribute worden vrijgegeven aan <strong title="%spEntityId%">%displayName%</strong>.',
+    'The following attribute(s) will be released to <strong title="%spEntityId%">%displayName%</strong>.' => 'De volgende attribute(n) worden vrijgegeven aan <strong title="%spEntityId%">%displayName%</strong>.',
     'Username' => 'Gebruikersnaam',
     'Value(s)' => 'Waarde(s)',
 ];

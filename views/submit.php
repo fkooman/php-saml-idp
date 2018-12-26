@@ -2,7 +2,7 @@
 <?php $this->start('content'); ?>
 
     <p>
-        <?=$this->t('The following attributes will be released to <strong title="%spEntityId%">%displayName%</strong>.'); ?>
+        <?=$this->t('The following attribute(s) will be released to <strong title="%spEntityId%">%displayName%</strong>.'); ?>
     </p>
 
     <table>
@@ -39,6 +39,6 @@
         <?php if (null !== $relayState): ?>
             <input type="hidden" name="RelayState" value="<?=$this->e($relayState); ?>">
         <?php endif; ?>
-        <button type="submit"><?=$this->t('Confirm'); ?></button>
+        <button type="submit"><?=$this->t('Approve'); ?></button>
     </form>
 <?php $this->stop(); ?>
