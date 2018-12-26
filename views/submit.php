@@ -14,7 +14,7 @@
             <tr>
                 <th>
 <?php if (\array_key_exists($attributeName, $attributeMapping)): ?>
-                <span title="<?=$this->e($attributeName); ?>"><?=$this->e($attributeMapping[$attributeName]); ?>
+                <span title="<?=$this->e($attributeName); ?>"><?=$this->e($attributeMapping[$attributeName]); ?></span>
 <?php else: ?>
                 <?=$this->e($attributeName); ?>
 <?php endif; ?>
@@ -39,6 +39,6 @@
         <?php if (null !== $relayState): ?>
             <input type="hidden" name="RelayState" value="<?=$this->e($relayState); ?>">
         <?php endif; ?>
-        <input type="submit" value="Confirm">
+        <button type="submit">Confirm</button>
     </form>
 <?php $this->stop(); ?>
