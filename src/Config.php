@@ -49,7 +49,7 @@ class Config
         /**
          * @psalm-suppress UnresolvableInclude
          */
-        $configData = @include $fileName;
+        $configData = include $fileName;
         if (false === $configData) {
             throw new ConfigException(\sprintf('unable to read "%s"', $fileName));
         }
