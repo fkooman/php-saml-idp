@@ -40,8 +40,8 @@ use ParagonIE\ConstantTime\Base64UrlSafe;
 
 ErrorHandler::register();
 
-$tpl = new Template([\sprintf('%s/views', $baseDir)], \sprintf('%s/locale/nl_NL.php', $baseDir));
-//$tpl = new Template([\sprintf('%s/views', $baseDir)]);
+//$tpl = new Template([\sprintf('%s/views', $baseDir)], \sprintf('%s/locale/nl_NL.php', $baseDir));
+$tpl = new Template([\sprintf('%s/views', $baseDir)]);
 
 try {
     $config = Config::fromFile($baseDir.'/config/config.php');
