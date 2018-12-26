@@ -1,60 +1,16 @@
 body {
-    font-family: sans-serif;
-    max-width: 800px;
-    margin: 0 auto;
-    color: #333;
-}
-
-code {
-    font-size: 125%;
-}
-
-fieldset {
-    margin: 1em 0;
-    border: 0;
-    padding: 0;
-}
-
-form label {
-    display: block;
-    margin: 0.5em 0 0.2em 0;
-    font-weight: bold;
+    margin: 3rem auto;
+    max-width: 60rem;
 }
 
 div.footer {
-    margin-top: 2em;
     text-align: center;
-    font-size: 85%;
-}
-
-div.footer a {
-    color: #888;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 2em 0;
-    border: 1px solid #aaa;
-}
-
-table ul {
-    margin: 0;
-    padding: 0 1em;
-}
-
-tbody tr:nth-child(odd) {
-   background-color: #f4f4f4;
 }
 
 table th {
-    text-align: left;
+    vertical-align: top;
 }
 
-table thead th {
-    border-bottom: 1px solid #aaa;
-}
-
-table th, table td {
-    padding: 0.5em;
+ul {
+    margin: 0;
 }
