@@ -17,7 +17,7 @@
     </div> <!-- container -->
 
     <div class="footer">
-        <a href="https://git.tuxed.net/fkooman/php-saml-idp"><?=$this->t('php-saml-idp'); ?></a>
+        <a href="https://git.tuxed.net/fkooman/php-saml-idp">php-saml-idp</a>
     </div> <!-- footer -->
 </body>
 </html>

@@ -2,12 +2,12 @@
 <?php $this->start('content'); ?>
 
     <p>
-        The following attributes will be released to <strong title="<?=$this->e($spEntityId); ?>"><?=$this->e($displayName); ?></strong>.
+        <?=$this->t('The following attributes will be released to <strong title="%spEntityId%">%displayName%</strong>.'); ?>
     </p>
 
     <table>
         <thead>
-            <tr><th>Attribute</th><th>Value(s)</th></tr>
+            <tr><th><?=$this->t('Attribute'); ?></th><th><?=$this->t('Value(s)'); ?></th></tr>
         </thead>
         <tbody>
 <?php foreach ($attributeList as $attributeName => $attributeValueList): ?>
@@ -39,6 +39,6 @@
         <?php if (null !== $relayState): ?>
             <input type="hidden" name="RelayState" value="<?=$this->e($relayState); ?>">
         <?php endif; ?>
-        <button type="submit">Confirm</button>
+        <button type="submit"><?=$this->t('Confirm'); ?></button>
     </form>
 <?php $this->stop(); ?>
