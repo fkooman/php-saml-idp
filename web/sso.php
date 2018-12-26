@@ -28,6 +28,7 @@ $baseDir = \dirname(__DIR__);
 use fkooman\SAML\IdP\Certificate;
 use fkooman\SAML\IdP\Config;
 use fkooman\SAML\IdP\ErrorHandler;
+use fkooman\SAML\IdP\Http\HtmlResponse;
 use fkooman\SAML\IdP\Http\Request;
 use fkooman\SAML\IdP\Key;
 use fkooman\SAML\IdP\SAMLResponse;
@@ -83,7 +84,10 @@ try {
     // assume GET
     if (!$session->has('userInfo')) {
         // auth
-        echo $tpl->render('auth');
+        $response = new HtmlResponse(
+            $tpl->render('auth')
+        );
+        $response->send();
         exit(0);
     }
 
@@ -116,7 +120,8 @@ try {
         // force authentication of the user
         $session->delete('userInfo');
         // auth
-        echo $tpl->render('auth');
+        $response = new HtmlResponse($tpl->render('auth'));
+        $response->send();
         exit(0);
     }
 
@@ -170,19 +175,25 @@ try {
     $session->set($spEntityId, ['transientNameId' => $transientNameId]);
 
     $responseXml = $samlResponse->getAssertion($spConfig, $spEntityId, $idpEntityId, $authnRequestId, $transientNameId);
-//    \error_log($responseXml);
-
-    echo $tpl->render(
-        'submit', [
-            'spEntityId' => $spEntityId,
-            'relayState' => $relayState,
-            'acsUrl' => $authnRequestAcsUrl,
-            'samlResponse' => Base64::encode($responseXml),
-            // XXX somehow improve this so it does not have to come from the object
-            'attributeList' => $samlResponse->getAttributeList($spConfig),
-            'attributeMapping' => SAMLResponse::getAttributeMapping(),
-        ]
+    $response = new HtmlResponse(
+        $tpl->render(
+            'submit', [
+                'spEntityId' => $spEntityId,
+                'relayState' => $relayState,
+                'acsUrl' => $authnRequestAcsUrl,
+                'samlResponse' => Base64::encode($responseXml),
+                // XXX somehow improve this so it does not have to come from the object
+                'attributeList' => $samlResponse->getAttributeList($spConfig),
+                'attributeMapping' => SAMLResponse::getAttributeMapping(),
+            ]
+        )
     );
+    $response->send();
 } catch (Exception $e) {
-    echo $tpl->render('error', ['errorCode' => 500, 'errorMessage' => $e->getMessage()]);
+    $response = new HtmlResponse(
+        $tpl->render('error', ['errorCode' => 500, 'errorMessage' => $e->getMessage()]),
+        [],
+        500
+    );
+    $response->send();
 }

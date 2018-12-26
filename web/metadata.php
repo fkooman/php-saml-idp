@@ -60,5 +60,8 @@ $metaDataDocument = $tpl->render(
     ]
 );
 
-$response = new Response(200, ['Content-Type' => 'application/samlmetadata+xml'], $metaDataDocument);
+$response = new Response(
+    $metaDataDocument,
+    ['Content-Type' => 'application/samlmetadata+xml']
+);
 $response->send();

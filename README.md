@@ -81,7 +81,6 @@ And use that for `secretSalt` in the `config/config.php` file.
 
 - better error handling
 - better input validation
-- use `Http\Response` objects everywhere
 - WebSSO saml2int (encryption of assertion part is vague, what is "key transport"?!)
 - multi language support
 - major refactor and cleaning before a 1.0 release

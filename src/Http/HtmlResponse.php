@@ -24,17 +24,8 @@
 
 namespace fkooman\SAML\IdP\Http;
 
-class Response
+class HtmlResponse extends Response
 {
-    /** @var string */
-    private $body;
-
-    /** @var array<string,string> */
-    private $headers;
-
-    /** @var int */
-    private $statusCode;
-
     /**
      * @param string $body
      * @apram array<string,string> $headers
@@ -43,54 +34,10 @@ class Response
      */
     public function __construct($body = '', array $headers = [], $statusCode = 200)
     {
-        $this->body = $body;
-        $this->headers = $headers;
-        $this->statusCode = $statusCode;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBody()
-    {
-        return $this->body;
-    }
-
-    /**
-     * @return array<string,string>
-     */
-    public function getHeaders()
-    {
-        return $this->headers;
-    }
-
-    /**
-     * @return int
-     */
-    public function getStatusCode()
-    {
-        return $this->statusCode;
-    }
-
-    /**
-     * @param string $key
-     *
-     * @return string
-     */
-    public function getHeader($key)
-    {
-        return $this->headers[$key];
-    }
-
-    /**
-     * @return void
-     */
-    public function send()
-    {
-        \http_response_code($this->statusCode);
-        foreach ($this->headers as $k => $v) {
-            \header(\sprintf('%s: %s', $k, $v));
-        }
-        echo $this->body;
+        parent::__construct(
+            $body,
+            \array_merge($headers, ['Content-Type' => 'text/html; charset=UTF-8']),
+            $statusCode
+        );
     }
 }

@@ -27,6 +27,7 @@ $baseDir = \dirname(__DIR__);
 
 use fkooman\SAML\IdP\Config;
 use fkooman\SAML\IdP\ErrorHandler;
+use fkooman\SAML\IdP\Http\HtmlResponse;
 use fkooman\SAML\IdP\Http\Request;
 use fkooman\SAML\IdP\Http\Response;
 use fkooman\SAML\IdP\Key;
@@ -174,9 +175,17 @@ try {
     // XXX make sure it does not already have a "?" in the SLO URL!
     $sloUrl = $sloUrl.'?'.$httpQuery;
 
-    $response = new Response(302);
-    $response->setHeader('Location', $sloUrl);
+    $response = new Response(
+        '',
+        ['Location' => $sloUrl],
+        302
+    );
     $response->send();
 } catch (Exception $e) {
-    echo $tpl->render('error', ['errorCode' => 500, 'errorMessage' => $e->getMessage()]);
+    $response = new HtmlResponse(
+        $tpl->render('error', ['errorCode' => 500, 'errorMessage' => $e->getMessage()]),
+        [],
+        500
+    );
+    $response->send();
 }
