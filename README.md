@@ -9,11 +9,10 @@ Very simple SAML 2.0 IdP.
 - Metadata URL
 - HTTP POST binding for SAML Response
 - HTTP Redirect binding for AuthnRequest
-- Only supports RSA+SHA256 signed assertions
+- Only supports RSA+SHA256 signed assertions/requests
 - **No** encryption support
-- Does NOT verify AuthnRequest signatures
 - As simple as possible (only compat / helper libraries, **no** xmlseclibs)
-- Simple Authentication (static username/password)
+- Simple Authentication (username & password hash config entries)
 - LDAP Authentication
 - Attribute Mapping (from LDAP to e.g. OID)
 - Attribute Mapping / Filtering (per SP)
@@ -21,6 +20,8 @@ Very simple SAML 2.0 IdP.
 - Consent Page
 - Only "transient" NameID support
 - Logout (SLO)
+- Verifies `AuthnRequest` and `LogoutRequest` signatures if SP public key is
+  known
 
 # Screenshots
 
