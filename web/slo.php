@@ -98,6 +98,35 @@ try {
 
     // XXX do we need to validate the signature?! mod_auth_mellon adds a signature it seems... check saml2int
 
+    // 2. verify if we know the issuer <saml:Issuer>, i.e. is an existing entityID in the metadata
+    $spEntityId = $dom->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Issuer')->item(0)->nodeValue;
+    if (false === $metadataConfig->has($spEntityId)) {
+        throw new Exception('SP not registered here');
+    }
+
+    $spConfig = $metadataConfig->get($spEntityId);
+
+    // do we have a signing key for this SP?
+    // maybe it is good enough to enforce signature checking iff we have a
+    // public key for the SP...
+    if ($spConfig->has('signingKey')) {
+        $signingKey = $spConfig->get('signingKey');
+        $sigAlg = $request->getQueryParameter('SigAlg');
+        $signature = Base64::decode($request->getQueryParameter('Signature'));
+
+        $httpQuery = \http_build_query(
+            [
+                'SAMLRequest' => $request->getQueryParameter('SAMLRequest'),
+                'RelayState' => $request->getQueryParameter('RelayState'),
+                'SigAlg' => 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
+            ]
+        );
+        $rsaKey = new Key($signingKey);
+        if (1 !== \openssl_verify($httpQuery, $signature, $rsaKey->getPublicKey(), OPENSSL_ALGO_SHA256)) {
+            throw new Exception('signature invalid');
+        }
+    }
+
     // 1. verify "Destination"
     $ourSlo = $request->getRootUri().'slo.php';
     $ourEntityId = $request->getRootUri().'metadata.php';
@@ -105,12 +134,6 @@ try {
     $destSlo = $logoutRequest->getAttribute('Destination');
     if (false === \hash_equals($ourSlo, $destSlo)) {
         throw new Exception('specified destination is not our destination');
-    }
-
-    // 2. verify if we know the issuer <saml:Issuer>, i.e. is an existing entityID in the metadata
-    $spEntityId = $dom->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Issuer')->item(0)->nodeValue;
-    if (false === $metadataConfig->has($spEntityId)) {
-        throw new Exception('SP not registered here');
     }
 
     // 3. see if we the transient ID provided is also set in the user's session for

@@ -54,4 +54,14 @@ class Key
     {
         return \openssl_pkey_get_private($this->pemKey);
     }
+
+    /**
+     * @return resource
+     */
+    public function getPublicKey()
+    {
+        $pemKey = \sprintf("-----BEGIN CERTIFICATE-----\n%s-----END CERTIFICATE-----", \chunk_split($this->pemKey));
+
+        return \openssl_pkey_get_public($pemKey);
+    }
 }

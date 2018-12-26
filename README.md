@@ -79,8 +79,6 @@ And use that for `secretSalt` in the `config/config.php` file.
 
 # TODO
 
-- implement signature checking of AuthnRequest
-- implement signature checking of LogoutRequest
 - include SP metadata import script
 - implement encrypted assertions (implement "Key Transport"?)
 - implement internationalization
