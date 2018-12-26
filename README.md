@@ -79,12 +79,8 @@ And use that for `secretSalt` in the `config/config.php` file.
 
 # TODO
 
-- better error handling
-- better input validation
-- WebSSO saml2int (encryption of assertion part is vague, what is "key transport"?!)
-- multi language support
-- major refactor and cleaning before a 1.0 release
-- support SPs with DisplayName in metadata
-- write SP import script
-- verify signature LogoutRequest coming from SP
-- support storing X.509 certificates from SPs for verifying signatures
+- implement signature checking of AuthnRequest
+- implement signature checking of LogoutRequest
+- include SP metadata import script
+- implement encrypted assertions (implement "Key Transport"?)
+- implement internationalization
