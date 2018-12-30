@@ -126,14 +126,14 @@ class SAMLResponse
         $responseDomDocument = new DOMDocument();
         $responseDomDocument->loadXML($responseDocument);
         $responseDomDocumentClone = clone $responseDomDocument;
-        $assertionElement = $responseDomDocumentClone->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Assertion')->item(0);
+        $responseElement = $responseDomDocumentClone->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'Response')->item(0);
         $signatureElement = $responseDomDocumentClone->getElementsByTagNameNS('http://www.w3.org/2000/09/xmldsig#', 'Signature')->item(0);
-        $assertionElement->removeChild($signatureElement);
+        $responseElement->removeChild($signatureElement);
 
         $digestValue = Base64::encode(
             \hash(
                 'sha256',
-                $assertionElement->C14N(true, false),
+                $responseElement->C14N(true, false),
                 true
             )
         );
