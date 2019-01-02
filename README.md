@@ -83,3 +83,4 @@ And use that for `secretSalt` in the `config/config.php` file.
 - include SP metadata import script
 - implement encrypted assertions (implement "Key Transport"?)
 - implement internationalization
+- better error handling, e.g. wrong username/password

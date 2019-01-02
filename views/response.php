@@ -38,7 +38,7 @@
         </saml:Conditions>
         <saml:AuthnStatement AuthnInstant="<?=$this->e($issueInstant); ?>" SessionNotOnOrAfter="<?=$this->e($sessionNotOnOrAfter); ?>" SessionIndex="<?=$this->e($sessionIndex); ?>">
             <saml:AuthnContext>
-                <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:Password</saml:AuthnContextClassRef>
+                <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml:AuthnContextClassRef>
             </saml:AuthnContext>
         </saml:AuthnStatement>
 <?php if (0 !== \count($attributeList)): ?>
