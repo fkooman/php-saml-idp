@@ -21,9 +21,9 @@
                 </ds:X509Data>
             </ds:KeyInfo>
         </md:KeyDescriptor>
+        <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="<?=$this->e($sloUri); ?>"/>
         <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</md:NameIDFormat>
         <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="<?=$this->e($ssoUri); ?>"/>
-        <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="<?=$this->e($sloUri); ?>"/>
     </md:IDPSSODescriptor>
     <md:ContactPerson contactType="technical">
       <md:EmailAddress><?=$this->e($technicalContact); ?></md:EmailAddress>
