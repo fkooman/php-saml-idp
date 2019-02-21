@@ -24,6 +24,8 @@
 
 namespace fkooman\SAML\IdP;
 
+use Exception;
+
 class UserInfo
 {
     /** @var string */
@@ -56,5 +58,19 @@ class UserInfo
     public function getAttributes()
     {
         return $this->attributeList;
+    }
+
+    /**
+     * @param string $attributeName
+     *
+     * @return array<string>
+     */
+    public function getAttribute($attributeName)
+    {
+        if (!\array_key_exists($attributeName, $this->attributeList)) {
+            throw new Exception(\sprintf('attribute "%s" not available', $attributeName));
+        }
+
+        return $this->attributeList[$attributeName];
     }
 }

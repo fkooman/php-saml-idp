@@ -181,7 +181,6 @@ try {
     }
 
     $identifierSourceAttribute = $config->get('identifierSourceAttribute');
-
     $persistentId = Base64UrlSafe::encodeUnpadded(
         \hash(
             'sha256',
@@ -189,6 +188,7 @@ try {
             true
         )
     );
+
     $samlResponse->setAttribute('urn:oid:1.3.6.1.4.1.5923.1.1.1.10', [$persistentId]);
     $samlResponse->setAttribute(
         'urn:oasis:names:tc:SAML:attribute:pairwise-id',
@@ -199,6 +199,25 @@ try {
     foreach ($userInfo->getAttributes() as $k => $v) {
         $samlResponse->setAttribute($k, $v);
     }
+
+    $identifierSourceAttributeValue = $userInfo->getAttribute($config->get('identifierSourceAttribute'))[0];
+    $persistentId = Base64UrlSafe::encodeUnpadded(
+        \hash(
+            'sha256',
+            \sprintf('%s|%s|%s|%s', $secretSalt, $identifierSourceAttributeValue, $idpEntityId, $spEntityId),
+            true
+        )
+    );
+
+    \error_log($identifierSourceAttributeValue.':'.$persistentId);
+
+    $samlResponse->setAttribute('urn:oid:1.3.6.1.4.1.5923.1.1.1.10', [$persistentId]);
+    $samlResponse->setAttribute(
+        'urn:oasis:names:tc:SAML:attribute:pairwise-id',
+        [
+            \sprintf('%s@%s', $persistentId, $config->get('identifierScope')),
+        ]
+    );
 
     $transientNameId = Base64UrlSafe::encodeUnpadded(\random_bytes(32));
     $session->set($spEntityId, ['transientNameId' => $transientNameId]);
