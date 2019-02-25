@@ -209,7 +209,8 @@ try {
         )
     );
 
-    \error_log($identifierSourceAttributeValue.':'.$persistentId);
+    $eduPersonTargetedId = \sprintf('%s!%s!%s', $idpEntityId, $spEntityId, $persistentId);
+    \error_log($identifierSourceAttributeValue.':'.$eduPersonTargetedId);
 
     $samlResponse->setAttribute('urn:oid:1.3.6.1.4.1.5923.1.1.1.10', [$persistentId]);
     $samlResponse->setAttribute(
