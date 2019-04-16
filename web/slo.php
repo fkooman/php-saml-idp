@@ -87,7 +87,7 @@ try {
     }
 
     \libxml_disable_entity_loader(false);
-    if (false === $dom->schemaValidate(\sprintf('%s/schema/saml-schema-protocol-2.0.xsd', $baseDir))) {
+    if (false === $dom->schemaValidate(\sprintf('%s/xsd/saml-schema-protocol-2.0.xsd', $baseDir))) {
         throw new Exception('LogoutRequest schema validation failed');
     }
     \libxml_disable_entity_loader(true);
