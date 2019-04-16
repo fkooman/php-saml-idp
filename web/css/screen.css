@@ -3,8 +3,8 @@ body {
     max-width: 60rem;
 }
 
-table th {
-    vertical-align: top;
+table {
+    width: 100%;
 }
 
 div.footer {

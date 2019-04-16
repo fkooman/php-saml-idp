@@ -24,12 +24,16 @@
 
 namespace fkooman\SAML\IdP;
 
-use Exception;
+use DateInterval;
+use DateTime;
+use fkooman\SAML\IdP\Http\Exception\HttpException;
 use fkooman\SAML\IdP\Http\HtmlResponse;
 use fkooman\SAML\IdP\Http\Request;
+use fkooman\SAML\IdP\Http\Response;
 use fkooman\SeCookie\SessionInterface;
 use ParagonIE\ConstantTime\Base64;
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use RuntimeException;
 
 class Service
 {
@@ -48,6 +52,9 @@ class Service
     /** @var Template */
     private $tpl;
 
+    /** @var \DateTime */
+    private $dateTime;
+
     /**
      * @param string $baseDir
      */
@@ -58,6 +65,7 @@ class Service
         $this->metadataConfig = $metadataConfig;
         $this->session = $session;
         $this->tpl = $tpl;
+        $this->dateTime = new DateTime();
     }
 
     /**
@@ -68,27 +76,72 @@ class Service
         switch ($request->getMethod()) {
             case 'GET':
             case 'HEAD':
-                if (false === $this->isAuthenticated($request)) {
-                    return new HtmlResponse(
-                        $this->tpl->render('auth')
-                    );
+                switch ($request->getPathInfo()) {
+                    case '/metadata':
+                        return $this->getMetadata($request);
+                    case '/sso':
+                        if (false === $this->isAuthenticated($request)) {
+                            return new HtmlResponse(
+                                $this->tpl->render('auth')
+                            );
+                        }
+
+                        return $this->processRequest($request);
+                    default:
+                        throw new HttpException('404');
                 }
 
-                return $this->processRequest($request);
+                break;
             case 'POST':
-//                switch ($request->getPathInfo()) {
-//                    case '/auth':
+                switch ($request->getPathInfo()) {
+                    case '/sso':
                         $this->handleAuth($request);
 
                         return $this->processRequest($request);
-//                    default:
-//                        throw new Exception('404');
-//                }
+                    default:
+                        throw new HttpException('404');
+                }
 
                 break;
             default:
-                throw new Exception('405');
+                throw new HttpException('405');
         }
+    }
+
+    /**
+     * @return \fkooman\SAML\IdP\Http\Response
+     */
+    private function getMetadata(Request $request)
+    {
+        $entityId = $request->getRootUri().'metadata';
+        $ssoUri = $request->getRootUri().'sso';
+        $sloUri = $request->getRootUri().'slo';
+
+        $rsaCert = Certificate::fromFile($this->baseDir.'/config/server.crt');
+        $keyInfo = $rsaCert->toKeyInfo();
+
+        $validUntil = date_add(clone $this->dateTime, new DateInterval('PT24H'));
+
+        $metaDataDocument = $this->tpl->render(
+            'metadata',
+            [
+                'entityId' => $entityId,
+                'keyInfo' => $keyInfo,
+                'ssoUri' => $ssoUri,
+                'sloUri' => $sloUri,
+                'displayNameList' => $this->config->get('metaData')->get('displayNameList')->toArray(),
+                'logoList' => $this->config->get('metaData')->get('logoList')->toArray(),
+                'informationUrlList' => $this->config->get('metaData')->get('informationUrlList')->toArray(),
+                'technicalContact' => $this->config->get('metaData')->get('technicalContact'),
+                'identifierScope' => $this->config->get('identifierScope'),
+                'validUntil' => $validUntil->format('Y-m-d\TH:i:s\Z'),
+            ]
+        );
+
+        return new Response(
+            $metaDataDocument,
+            ['Content-Type' => 'application/samlmetadata+xml']
+        );
     }
 
     /**
@@ -121,7 +174,7 @@ class Service
     private function processRequest(Request $request)
     {
         $userAttributeList = [];
-        $idpEntityId = $request->getRootUri().'metadata.php';
+        $idpEntityId = $request->getRootUri().'metadata';
 
         // XXX input validation of everything
         $samlRequest = gzinflate(Base64::decode($request->getQueryParameter('SAMLRequest'), true));
@@ -174,7 +227,7 @@ class Service
             );
             $rsaKey = new Key($signingKey);
             if (1 !== openssl_verify($httpQuery, $signature, $rsaKey->getPublicKey(), OPENSSL_ALGO_SHA256)) {
-                throw new Exception('signature invalid');
+                throw new RuntimeException('signature invalid');
             }
         }
 
@@ -196,7 +249,7 @@ class Service
 
         $secretSalt = $this->config->get('secretSalt');
         if ('__REPLACE_ME__' === $secretSalt) {
-            throw new Exception('"secretSalt" not configured');
+            throw new RuntimeException('"secretSalt" not configured');
         }
 
         $identifierSourceAttribute = $this->config->get('identifierSourceAttribute');
