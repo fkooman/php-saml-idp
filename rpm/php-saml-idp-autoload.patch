@@ -58,6 +58,86 @@ index 8c0025a..75dc0fd 100644
  
  use fkooman\SAML\IdP\Config;
  use fkooman\SAML\IdP\FileIO;
+diff --git a/rpm/php-saml-idp-autoload.patch b/rpm/php-saml-idp-autoload.patch
+index c7066ce..e69de29 100644
+--- a/rpm/php-saml-idp-autoload.patch
++++ b/rpm/php-saml-idp-autoload.patch
+@@ -1,75 +0,0 @@
+-diff --git a/bin/add-user.php b/bin/add-user.php
+-index 87ec68c..c68a1d5 100644
+---- a/bin/add-user.php
+-+++ b/bin/add-user.php
+-@@ -1,3 +1,4 @@
+-+#!/usr/bin/env php
+- <?php
+- 
+- /*
+-@@ -22,8 +23,8 @@
+-  * SOFTWARE.
+-  */
+- 
+--require_once dirname(__DIR__).'/vendor/autoload.php';
+--$baseDir = dirname(__DIR__);
+-+require_once '/usr/share/php/fkooman/SAML/IdP/autoload.php';
+-+$baseDir = '/usr/share/php-saml-idp';
+- 
+- use fkooman\SAML\IdP\Config;
+- 
+-diff --git a/bin/generate-salt.php b/bin/generate-salt.php
+-index dfcfdcf..c24ac63 100644
+---- a/bin/generate-salt.php
+-+++ b/bin/generate-salt.php
+-@@ -1,3 +1,4 @@
+-+#!/usr/bin/env php
+- <?php
+- 
+- /*
+-@@ -22,8 +23,8 @@
+-  * SOFTWARE.
+-  */
+- 
+--require_once dirname(__DIR__).'/vendor/autoload.php';
+--$baseDir = dirname(__DIR__);
+-+require_once '/usr/share/php/fkooman/SAML/IdP/autoload.php';
+-+$baseDir = '/usr/share/php-saml-idp';
+- 
+- use ParagonIE\ConstantTime\Base64UrlSafe;
+- 
+-diff --git a/bin/init.php b/bin/init.php
+-index 8c0025a..75dc0fd 100644
+---- a/bin/init.php
+-+++ b/bin/init.php
+-@@ -1,3 +1,4 @@
+-+#!/usr/bin/env php
+- <?php
+- 
+- /*
+-@@ -22,8 +23,8 @@
+-  * SOFTWARE.
+-  */
+- 
+--require_once dirname(__DIR__).'/vendor/autoload.php';
+--$baseDir = dirname(__DIR__);
+-+require_once '/usr/share/php/fkooman/SAML/IdP/autoload.php';
+-+$baseDir = '/usr/share/php-saml-idp';
+- 
+- use fkooman\SAML\IdP\Config;
+- use fkooman\SAML\IdP\FileIO;
+-diff --git a/web/index.php b/web/index.php
+-index 8d00227..694ed07 100644
+---- a/web/index.php
+-+++ b/web/index.php
+-@@ -22,8 +22,8 @@
+-  * SOFTWARE.
+-  */
+- 
+--require_once dirname(__DIR__).'/vendor/autoload.php';
+--$baseDir = dirname(__DIR__);
+-+require_once '/usr/share/php/fkooman/SAML/IdP/autoload.php';
+-+$baseDir = '/usr/share/php-saml-idp';
+- 
+- use fkooman\SAML\IdP\Config;
+- use fkooman\SAML\IdP\ErrorHandler;
 diff --git a/web/index.php b/web/index.php
 index 8d00227..694ed07 100644
 --- a/web/index.php
