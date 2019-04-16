@@ -202,4 +202,16 @@ class Request
 
         return sprintf('%s%s', $this->getAuthority(), $requestUri);
     }
+
+    /**
+     * @return string
+     */
+    public function getPathInfo()
+    {
+        if (!\array_key_exists('PATH_INFO', $this->serverData)) {
+            return '/';
+        }
+
+        return $this->serverData['PATH_INFO'];
+    }
 }
