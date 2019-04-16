@@ -1,6 +1,6 @@
 <?php $this->layout('base'); ?>
 <?php $this->start('content'); ?>
-
+    <div class="consent">
     <p>
         <?=$this->t('The following attribute(s) will be released to <strong title="%spEntityId%">%displayName%</strong>.'); ?>
     </p>
@@ -21,11 +21,11 @@
                 </th>
                 <td>
 <?php if (1 === count($attributeValueList)): ?>
-                    <?=$this->e($attributeValueList[0]); ?>
+                    <code><?=$this->e($attributeValueList[0]); ?></code>
 <?php else: ?>
                     <ul>
 <?php foreach ($attributeValueList as $attributeValue): ?>                    
-                        <li><?=$this->e($attributeValue); ?></li>
+                        <li><code><?=$this->e($attributeValue); ?></code></li>
 <?php endforeach; ?>
                     </ul>
 <?php endif; ?>
@@ -41,4 +41,5 @@
         <?php endif; ?>
         <button type="submit"><?=$this->t('Approve'); ?></button>
     </form>
+    </div> <!-- /consent -->
 <?php $this->stop(); ?>

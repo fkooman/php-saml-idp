@@ -1,6 +1,22 @@
-body {
-    margin: 3rem auto;
+div.header {
+    margin: 2rem 0;
+}
+
+div.auth, div.consent, div.error {
+    background-color: #fefefe;
+    margin: 3rem auto 1em auto;
+    max-width: 30rem;
+    border-radius: 0.5rem;
+    border: 1px solid #ddd;
+    padding: 2rem;
+}
+
+div.consent {
     max-width: 50rem;
+}
+
+h1 {
+    text-align: center;
 }
 
 form {
@@ -24,14 +40,20 @@ th, td {
     padding: 0.5em;
 }
 
-div.footer {
-    text-align: center;
+th {
+    vertical-align: top;
 }
 
 ul {
-    padding:0;
+    padding-left: 1rem;
 }
 
-li {
-    list-style: none;
+div.footer {
+    text-align: center;
+    font-size: 85%;
+    color: #888;
+}
+
+div.footer a {
+    color: #444;
 }
