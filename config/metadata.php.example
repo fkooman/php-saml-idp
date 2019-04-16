@@ -43,12 +43,12 @@ return [
             'urn:mace:dir:attribute-def:uid',
             'urn:mace:terena.org:attribute-def:schacHomeOrganization',
             'urn:mace:dir:attribute-def:mail',
-            'urn:mace:dir:attribute-def:displayName',
+            'urn:mace:dir:attribute-def:cn',
         ],
         'attributeMapping' => [
             'uid' => 'urn:mace:dir:attribute-def:uid',
             'mail' => 'urn:mace:dir:attribute-def:mail',
-            'cn' => 'urn:mace:dir:attribute-def:displayName',
+            'cn' => 'urn:mace:dir:attribute-def:cn',
         ],
         'staticAttributeList' => [
             'urn:mace:terena.org:attribute-def:schacHomeOrganization' => ['example.org'],
