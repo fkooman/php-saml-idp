@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2018 François Kooman <fkooman@tuxed.net>
+ * Copyright (c) 2019 François Kooman <fkooman@tuxed.net>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -71,8 +71,8 @@ class SAMLResponse
     public function getAttributeList(Config $spConfig)
     {
         return $this->prepareAttributes(
-                    $spConfig->has('attributeRelease') ? $spConfig->get('attributeRelease')->toArray() : [],
-                    $spConfig->has('attributeMapping') ? $spConfig->get('attributeMapping')->toArray() : []
+            $spConfig->has('attributeRelease') ? $spConfig->get('attributeRelease')->toArray() : [],
+            $spConfig->has('attributeMapping') ? $spConfig->get('attributeMapping')->toArray() : []
         );
     }
 
@@ -87,8 +87,8 @@ class SAMLResponse
      */
     public function getAssertion(Config $spConfig, $spEntityId, $idpEntityId, $id, $transientNameId)
     {
-        $responseId = '_'.\bin2hex(\random_bytes(32));
-        $assertionId = '_'.\bin2hex(\random_bytes(32));
+        $responseId = '_'.bin2hex(random_bytes(32));
+        $assertionId = '_'.bin2hex(random_bytes(32));
         $destinationAcs = $spConfig->get('acsUrl');
         $inResponseTo = $id;
         $issueInstant = $this->dateTime->format('Y-m-d\TH:i:s\Z');
@@ -97,7 +97,7 @@ class SAMLResponse
         $notOnOrAfter = $this->dateTime->add(new DateInterval('PT6M'))->format('Y-m-d\TH:i:s\Z');
         $sessionNotOnOrAfter = $this->dateTime->add(new DateInterval('PT8H'))->format('Y-m-d\TH:i:s\Z');
         $assertionAudience = $spEntityId;
-        $sessionIndex = '_'.\bin2hex(\random_bytes(16));
+        $sessionIndex = '_'.bin2hex(random_bytes(16));
         $x509Certificate = $this->rsaCert->toKeyInfo();
 
         $responseDocument = $this->tpl->render(
@@ -131,7 +131,7 @@ class SAMLResponse
         $responseElement->removeChild($signatureElement);
 
         $digestValue = Base64::encode(
-            \hash(
+            hash(
                 'sha256',
                 $responseElement->C14N(true, false),
                 true
@@ -141,7 +141,7 @@ class SAMLResponse
         $digestValueElement = $responseDomDocument->getElementsByTagNameNS('http://www.w3.org/2000/09/xmldsig#', 'DigestValue')->item(0);
         $digestValueElement->appendChild($responseDomDocument->createTextNode($digestValue));
         $signedInfoElement = $responseDomDocument->getElementsByTagNameNS('http://www.w3.org/2000/09/xmldsig#', 'SignedInfo')->item(0);
-        \openssl_sign(
+        openssl_sign(
             $signedInfoElement->C14N(true, false),
             $signedInfoSignature,
             $this->rsaKey->getPrivateKey(),

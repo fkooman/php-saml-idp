@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2018 François Kooman <fkooman@tuxed.net>
+ * Copyright (c) 2019 François Kooman <fkooman@tuxed.net>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-require_once \dirname(__DIR__).'/vendor/autoload.php';
-$baseDir = \dirname(__DIR__);
+require_once dirname(__DIR__).'/vendor/autoload.php';
+$baseDir = dirname(__DIR__);
 
 use fkooman\SAML\IdP\Certificate;
 use fkooman\SAML\IdP\Config;
@@ -41,7 +41,7 @@ $rsaCert = Certificate::fromFile($baseDir.'/config/server.crt');
 $keyInfo = $rsaCert->toKeyInfo();
 
 $dateTime = new DateTime();
-$validUntil = \date_add(clone $dateTime, new DateInterval('PT24H'));
+$validUntil = date_add(clone $dateTime, new DateInterval('PT24H'));
 
 $tpl = new Template([$baseDir.'/views']);
 $metaDataDocument = $tpl->render(

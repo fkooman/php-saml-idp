@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2018 François Kooman <fkooman@tuxed.net>
+ * Copyright (c) 2019 François Kooman <fkooman@tuxed.net>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@ class HtmlResponse extends Response
     {
         parent::__construct(
             $body,
-            \array_merge($headers, ['Content-Type' => 'text/html; charset=UTF-8']),
+            array_merge($headers, ['Content-Type' => 'text/html; charset=UTF-8']),
             $statusCode
         );
     }

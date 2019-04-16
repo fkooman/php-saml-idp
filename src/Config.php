@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2018 François Kooman <fkooman@tuxed.net>
+ * Copyright (c) 2019 François Kooman <fkooman@tuxed.net>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,7 +51,7 @@ class Config
          */
         $configData = include $fileName;
         if (false === $configData) {
-            throw new ConfigException(\sprintf('unable to read "%s"', $fileName));
+            throw new ConfigException(sprintf('unable to read "%s"', $fileName));
         }
 
         return new self($configData);
@@ -72,7 +72,7 @@ class Config
      */
     public function keys()
     {
-        return \array_keys($this->data);
+        return array_keys($this->data);
     }
 
     /**
@@ -85,7 +85,7 @@ class Config
         if (!\array_key_exists($key, $this->data)) {
             // consumers MUST check first if a field is available before
             // requesting it
-            throw new ConfigException(\sprintf('missing field "%s" in configuration', $key));
+            throw new ConfigException(sprintf('missing field "%s" in configuration', $key));
         }
 
         if (\is_array($this->data[$key])) {

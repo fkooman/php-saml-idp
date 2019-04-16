@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2018 François Kooman <fkooman@tuxed.net>
+ * Copyright (c) 2019 François Kooman <fkooman@tuxed.net>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -91,7 +91,7 @@ class Request
     public function getQueryParameter($key)
     {
         if (!$this->hasQueryParameter($key)) {
-            throw new HttpException(\sprintf('query parameter "%s" not provided', $key), 400);
+            throw new HttpException(sprintf('query parameter "%s" not provided', $key), 400);
         }
 
         return $this->getData[$key];
@@ -123,7 +123,7 @@ class Request
     public function getPostParameter($key)
     {
         if (!$this->hasPostParameter($key)) {
-            throw new HttpException(\sprintf('post parameter "%s" not provided', $key), 400);
+            throw new HttpException(sprintf('post parameter "%s" not provided', $key), 400);
         }
 
         return $this->postData[$key];
@@ -132,7 +132,7 @@ class Request
     /**
      * @param string $key
      *
-     * @return string|null
+     * @return null|string
      */
     public function getHeader($key)
     {
@@ -146,7 +146,7 @@ class Request
     {
         $rootDir = \dirname($this->serverData['SCRIPT_NAME']);
         if ('/' !== $rootDir) {
-            return \sprintf('%s/', $rootDir);
+            return sprintf('%s/', $rootDir);
         }
 
         return $rootDir;
@@ -179,10 +179,10 @@ class Request
         }
 
         if ($usePort) {
-            return \sprintf('%s://%s:%d', $requestScheme, $serverName, $serverPort);
+            return sprintf('%s://%s:%d', $requestScheme, $serverName, $serverPort);
         }
 
-        return \sprintf('%s://%s', $requestScheme, $serverName);
+        return sprintf('%s://%s', $requestScheme, $serverName);
     }
 
     /**
@@ -190,7 +190,7 @@ class Request
      */
     public function getRootUri()
     {
-        return \sprintf('%s%s', $this->getAuthority(), $this->getRoot());
+        return sprintf('%s%s', $this->getAuthority(), $this->getRoot());
     }
 
     /**
@@ -200,6 +200,6 @@ class Request
     {
         $requestUri = $this->serverData['REQUEST_URI'];
 
-        return \sprintf('%s%s', $this->getAuthority(), $requestUri);
+        return sprintf('%s%s', $this->getAuthority(), $requestUri);
     }
 }

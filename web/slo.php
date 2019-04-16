@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2018 François Kooman <fkooman@tuxed.net>
+ * Copyright (c) 2019 François Kooman <fkooman@tuxed.net>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-require_once \dirname(__DIR__).'/vendor/autoload.php';
-$baseDir = \dirname(__DIR__);
+require_once dirname(__DIR__).'/vendor/autoload.php';
+$baseDir = dirname(__DIR__);
 
 use fkooman\SAML\IdP\Config;
 use fkooman\SAML\IdP\ErrorHandler;
@@ -38,7 +38,7 @@ use ParagonIE\ConstantTime\Base64;
 
 ErrorHandler::register();
 
-$tpl = new Template([\sprintf('%s/views', $baseDir)]);
+$tpl = new Template([sprintf('%s/views', $baseDir)]);
 
 try {
     /*
@@ -62,8 +62,8 @@ try {
         [],
         new Cookie(
             [
-               'SameSite' => 'Lax',
-               'Secure' => $secureCookie,
+                'SameSite' => 'Lax',
+                'Secure' => $secureCookie,
             ]
         )
     );
@@ -73,9 +73,9 @@ try {
     // XXX we do NOT verify the signature here, we MUST according to saml2int spec
 
     // XXX input validation of everything
-    $samlRequest = \gzinflate(Base64::decode($request->getQueryParameter('SAMLRequest'), true));
+    $samlRequest = gzinflate(Base64::decode($request->getQueryParameter('SAMLRequest'), true));
 
-    \libxml_disable_entity_loader(true);
+    libxml_disable_entity_loader(true);
     $dom = new DOMDocument();
     $dom->loadXML($samlRequest, LIBXML_NONET | LIBXML_DTDLOAD | LIBXML_DTDATTR | LIBXML_COMPACT);
     foreach ($dom->childNodes as $child) {
@@ -86,11 +86,11 @@ try {
         }
     }
 
-    \libxml_disable_entity_loader(false);
-    if (false === $dom->schemaValidate(\sprintf('%s/xsd/saml-schema-protocol-2.0.xsd', $baseDir))) {
+    libxml_disable_entity_loader(false);
+    if (false === $dom->schemaValidate(sprintf('%s/xsd/saml-schema-protocol-2.0.xsd', $baseDir))) {
         throw new Exception('LogoutRequest schema validation failed');
     }
-    \libxml_disable_entity_loader(true);
+    libxml_disable_entity_loader(true);
 
     // XXX validate it actually is an LogoutRequest!
     $logoutRequest = $dom->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'LogoutRequest')->item(0);
@@ -114,7 +114,7 @@ try {
         $sigAlg = $request->getQueryParameter('SigAlg');
         $signature = Base64::decode($request->getQueryParameter('Signature'));
 
-        $httpQuery = \http_build_query(
+        $httpQuery = http_build_query(
             [
                 'SAMLRequest' => $request->getQueryParameter('SAMLRequest'),
                 'RelayState' => $request->getQueryParameter('RelayState'),
@@ -122,7 +122,7 @@ try {
             ]
         );
         $rsaKey = new Key($signingKey);
-        if (1 !== \openssl_verify($httpQuery, $signature, $rsaKey->getPublicKey(), OPENSSL_ALGO_SHA256)) {
+        if (1 !== openssl_verify($httpQuery, $signature, $rsaKey->getPublicKey(), OPENSSL_ALGO_SHA256)) {
             throw new Exception('signature invalid');
         }
     }
@@ -132,7 +132,7 @@ try {
     $ourEntityId = $request->getRootUri().'metadata.php';
 
     $destSlo = $logoutRequest->getAttribute('Destination');
-    if (false === \hash_equals($ourSlo, $destSlo)) {
+    if (false === hash_equals($ourSlo, $destSlo)) {
         throw new Exception('specified destination is not our destination');
     }
 
@@ -144,7 +144,7 @@ try {
     $logoutRequestTransientNameId = $dom->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'NameID')->item(0)->nodeValue;
     // XXX make sure the attributes are correct, i.e. SPNameQualifier, Format
     $transientNameId = $session->get($spEntityId)['transientNameId'];
-    if (false === \hash_equals($transientNameId, $logoutRequestTransientNameId)) {
+    if (false === hash_equals($transientNameId, $logoutRequestTransientNameId)) {
         throw new Exception('provided transient NameID does not match expected value');
     }
 
@@ -162,7 +162,7 @@ try {
     $responseXml = $tpl->render(
         'logoutResponse',
         [
-            'id' => '_'.\bin2hex(\random_bytes(32)),
+            'id' => '_'.bin2hex(random_bytes(32)),
             'issueInstant' => $dateTime->format('Y-m-d\TH:i:s\Z'),
             'destination' => $sloUrl,
             'inResponseTo' => $logoutRequestId,
@@ -170,9 +170,9 @@ try {
         ]
     );
 
-    $httpQuery = \http_build_query(
+    $httpQuery = http_build_query(
         [
-            'SAMLResponse' => Base64::encode(\gzdeflate($responseXml)),
+            'SAMLResponse' => Base64::encode(gzdeflate($responseXml)),
             'RelayState' => $request->getQueryParameter('RelayState'),
             'SigAlg' => 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
         ]
@@ -182,14 +182,14 @@ try {
 
     // calculate the signature over httpQuery
     // add it to the query string
-    \openssl_sign(
+    openssl_sign(
         $httpQuery,
         $signedInfoSignature,
         $rsaKey->getPrivateKey(),
         OPENSSL_ALGO_SHA256
     );
 
-    $httpQuery .= '&'.\http_build_query(
+    $httpQuery .= '&'.http_build_query(
         [
             'Signature' => Base64::encode($signedInfoSignature),
         ]

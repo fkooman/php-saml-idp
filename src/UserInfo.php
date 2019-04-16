@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2018 François Kooman <fkooman@tuxed.net>
+ * Copyright (c) 2019 François Kooman <fkooman@tuxed.net>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -68,7 +68,7 @@ class UserInfo
     public function getAttribute($attributeName)
     {
         if (!\array_key_exists($attributeName, $this->attributeList)) {
-            throw new Exception(\sprintf('attribute "%s" not available', $attributeName));
+            throw new Exception(sprintf('attribute "%s" not available', $attributeName));
         }
 
         return $this->attributeList[$attributeName];

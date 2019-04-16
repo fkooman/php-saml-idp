@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2018 François Kooman <fkooman@tuxed.net>
+ * Copyright (c) 2019 François Kooman <fkooman@tuxed.net>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,7 +44,7 @@ class Certificate
      */
     public static function fromFile($certificateFile)
     {
-        return new self(\file_get_contents($certificateFile));
+        return new self(file_get_contents($certificateFile));
     }
 
     /**
@@ -54,19 +54,20 @@ class Certificate
     {
         $encodedData = '';
         $readCertData = false;
-        $inputRows = \explode("\n", $this->pemCert);
+        $inputRows = explode("\n", $this->pemCert);
         foreach ($inputRows as $inputRow) {
-            if (0 === \strpos('-----BEGIN CERTIFICATE-----', $inputRow)) {
+            if (0 === strpos('-----BEGIN CERTIFICATE-----', $inputRow)) {
                 $readCertData = true;
+
                 continue;
             }
-            if (0 === \strpos('-----END CERTIFICATE-----', $inputRow)) {
+            if (0 === strpos('-----END CERTIFICATE-----', $inputRow)) {
                 break;
             }
             if (!$readCertData) {
                 continue;
             }
-            $encodedData .= \trim($inputRow);
+            $encodedData .= trim($inputRow);
         }
 
         return $encodedData;

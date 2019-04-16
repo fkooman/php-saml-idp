@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2018 François Kooman <fkooman@tuxed.net>
+ * Copyright (c) 2019 François Kooman <fkooman@tuxed.net>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,11 +31,11 @@ class Template
     /** @var array<string> */
     private $templateFolderList;
 
-    /** @var string|null */
+    /** @var null|string */
     private $translationFile;
 
-    /** @var string|null */
-    private $activeSectionName = null;
+    /** @var null|string */
+    private $activeSectionName;
 
     /** @var array */
     private $sectionList = [];
@@ -66,7 +66,7 @@ class Template
      */
     public function addDefault(array $templateVariables)
     {
-        $this->templateVariables = \array_merge($this->templateVariables, $templateVariables);
+        $this->templateVariables = array_merge($this->templateVariables, $templateVariables);
     }
 
     /**
@@ -88,12 +88,12 @@ class Template
      */
     public function render($templateName, array $templateVariables = [])
     {
-        $this->templateVariables = \array_merge($this->templateVariables, $templateVariables);
-        \extract($this->templateVariables);
-        \ob_start();
+        $this->templateVariables = array_merge($this->templateVariables, $templateVariables);
+        extract($this->templateVariables);
+        ob_start();
         /** @psalm-suppress UnresolvableInclude */
         include $this->templatePath($templateName);
-        $templateStr = \ob_get_clean();
+        $templateStr = ob_get_clean();
         if (0 === \count($this->layoutList)) {
             // we have no layout defined, so simple template...
             return $templateStr;
@@ -126,11 +126,11 @@ class Template
     private function start($sectionName)
     {
         if (null !== $this->activeSectionName) {
-            throw new TemplateException(\sprintf('section "%s" already started', $this->activeSectionName));
+            throw new TemplateException(sprintf('section "%s" already started', $this->activeSectionName));
         }
 
         $this->activeSectionName = $sectionName;
-        \ob_start();
+        ob_start();
     }
 
     /**
@@ -142,7 +142,7 @@ class Template
             throw new TemplateException('no section started');
         }
 
-        $this->sectionList[$this->activeSectionName] = \ob_get_clean();
+        $this->sectionList[$this->activeSectionName] = ob_get_clean();
         $this->activeSectionName = null;
     }
 
@@ -175,7 +175,7 @@ class Template
 
     /**
      * @param string      $v
-     * @param string|null $cb
+     * @param null|string $cb
      *
      * @return string
      */
@@ -185,7 +185,7 @@ class Template
             $v = $this->batch($v, $cb);
         }
 
-        return \htmlentities($v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        return htmlentities($v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 
     /**
@@ -196,17 +196,18 @@ class Template
      */
     private function batch($v, $cb)
     {
-        $functionList = \explode('|', $cb);
+        $functionList = explode('|', $cb);
         foreach ($functionList as $f) {
             if ('escape' === $f) {
                 $v = $this->e($v);
+
                 continue;
             }
             if (\array_key_exists($f, $this->callbackList)) {
                 $f = $this->callbackList[$f];
             } else {
                 if (!\function_exists($f)) {
-                    throw new TemplateException(\sprintf('function "%s" does not exist', $f));
+                    throw new TemplateException(sprintf('function "%s" does not exist', $f));
                 }
             }
             $v = \call_user_func($f, $v);
@@ -245,7 +246,7 @@ class Template
             }
         }
 
-        return \str_replace(\array_keys($escapedVars), \array_values($escapedVars), $translatedText);
+        return str_replace(array_keys($escapedVars), array_values($escapedVars), $translatedText);
     }
 
     /**
@@ -256,8 +257,8 @@ class Template
     private function exists($templateName)
     {
         foreach ($this->templateFolderList as $templateFolder) {
-            $templatePath = \sprintf('%s/%s.php', $templateFolder, $templateName);
-            if (\file_exists($templatePath)) {
+            $templatePath = sprintf('%s/%s.php', $templateFolder, $templateName);
+            if (file_exists($templatePath)) {
                 return true;
             }
         }
@@ -272,13 +273,13 @@ class Template
      */
     private function templatePath($templateName)
     {
-        foreach (\array_reverse($this->templateFolderList) as $templateFolder) {
-            $templatePath = \sprintf('%s/%s.php', $templateFolder, $templateName);
-            if (\file_exists($templatePath)) {
+        foreach (array_reverse($this->templateFolderList) as $templateFolder) {
+            $templatePath = sprintf('%s/%s.php', $templateFolder, $templateName);
+            if (file_exists($templatePath)) {
                 return $templatePath;
             }
         }
 
-        throw new TemplateException(\sprintf('template "%s" does not exist', $templateName));
+        throw new TemplateException(sprintf('template "%s" does not exist', $templateName));
     }
 }

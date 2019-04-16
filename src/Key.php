@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2018 François Kooman <fkooman@tuxed.net>
+ * Copyright (c) 2019 François Kooman <fkooman@tuxed.net>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,7 +44,7 @@ class Key
      */
     public static function fromFile($keyFile)
     {
-        return new self(\file_get_contents($keyFile));
+        return new self(file_get_contents($keyFile));
     }
 
     /**
@@ -52,7 +52,7 @@ class Key
      */
     public function getPrivateKey()
     {
-        return \openssl_pkey_get_private($this->pemKey);
+        return openssl_pkey_get_private($this->pemKey);
     }
 
     /**
@@ -60,8 +60,8 @@ class Key
      */
     public function getPublicKey()
     {
-        $pemKey = \sprintf("-----BEGIN CERTIFICATE-----\n%s-----END CERTIFICATE-----", \chunk_split($this->pemKey));
+        $pemKey = sprintf("-----BEGIN CERTIFICATE-----\n%s-----END CERTIFICATE-----", chunk_split($this->pemKey));
 
-        return \openssl_pkey_get_public($pemKey);
+        return openssl_pkey_get_public($pemKey);
     }
 }

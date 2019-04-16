@@ -23,9 +23,9 @@
  * SOFTWARE.
  */
 
-require_once \dirname(__DIR__).'/vendor/autoload.php';
-$baseDir = \dirname(__DIR__);
+require_once dirname(__DIR__).'/vendor/autoload.php';
+$baseDir = dirname(__DIR__);
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
 
-echo Base64UrlSafe::encodeUnpadded(\random_bytes(32)).PHP_EOL;
+echo Base64UrlSafe::encodeUnpadded(random_bytes(32)).PHP_EOL;

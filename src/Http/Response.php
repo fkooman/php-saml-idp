@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2018 François Kooman <fkooman@tuxed.net>
+ * Copyright (c) 2019 François Kooman <fkooman@tuxed.net>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -87,9 +87,9 @@ class Response
      */
     public function send()
     {
-        \http_response_code($this->statusCode);
+        http_response_code($this->statusCode);
         foreach ($this->headers as $k => $v) {
-            \header(\sprintf('%s: %s', $k, $v));
+            header(sprintf('%s: %s', $k, $v));
         }
         echo $this->body;
     }

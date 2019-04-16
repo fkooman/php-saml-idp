@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2018 François Kooman <fkooman@tuxed.net>
+ * Copyright (c) 2019 François Kooman <fkooman@tuxed.net>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-require_once \dirname(__DIR__).'/vendor/autoload.php';
-$baseDir = \dirname(__DIR__);
+require_once dirname(__DIR__).'/vendor/autoload.php';
+$baseDir = dirname(__DIR__);
 
 use fkooman\SAML\IdP\Certificate;
 use fkooman\SAML\IdP\Config;
@@ -43,8 +43,8 @@ ErrorHandler::register();
 //$tpl = new Template([\sprintf('%s/views', $baseDir)], \sprintf('%s/locale/nl_NL.php', $baseDir));
 $tpl = new Template(
     [
-        \sprintf('%s/views', $baseDir),
-        \sprintf('%s/config/views', $baseDir),
+        sprintf('%s/views', $baseDir),
+        sprintf('%s/config/views', $baseDir),
     ]
 );
 
@@ -61,8 +61,8 @@ try {
         [],
         new Cookie(
             [
-               'SameSite' => 'Lax',
-               'Secure' => $secureCookie,
+                'SameSite' => 'Lax',
+                'Secure' => $secureCookie,
             ]
         )
     );
@@ -78,7 +78,7 @@ try {
     if ('POST' === $request->getMethod()) {
         // determine auth mech
         $authMethod = $config->get('authMethod');
-        $authMethodClass = '\\fkooman\\SAML\\IdP\\'.\ucfirst($authMethod);
+        $authMethodClass = '\\fkooman\\SAML\\IdP\\'.ucfirst($authMethod);
         $userAuthMethod = new $authMethodClass($config->get($authMethod));
 
         // set session crap
@@ -98,10 +98,10 @@ try {
     }
 
     // XXX input validation of everything
-    $samlRequest = \gzinflate(Base64::decode($request->getQueryParameter('SAMLRequest'), true));
+    $samlRequest = gzinflate(Base64::decode($request->getQueryParameter('SAMLRequest'), true));
     $relayState = $request->hasQueryParameter('RelayState') ? $request->getQueryParameter('RelayState') : null;
 
-    \libxml_disable_entity_loader(true);
+    libxml_disable_entity_loader(true);
     $dom = new DOMDocument();
     $dom->loadXML($samlRequest, LIBXML_NONET | LIBXML_DTDLOAD | LIBXML_DTDATTR | LIBXML_COMPACT);
     foreach ($dom->childNodes as $child) {
@@ -112,11 +112,11 @@ try {
         }
     }
 
-    \libxml_disable_entity_loader(false);
-    if (false === $dom->schemaValidate(\sprintf('%s/xsd/saml-schema-protocol-2.0.xsd', $baseDir))) {
+    libxml_disable_entity_loader(false);
+    if (false === $dom->schemaValidate(sprintf('%s/xsd/saml-schema-protocol-2.0.xsd', $baseDir))) {
         throw new Exception('AuthnRequest schema validation failed');
     }
-    \libxml_disable_entity_loader(true);
+    libxml_disable_entity_loader(true);
 
     // XXX validate it actually is an AuthnRequest!
     $authnRequest = $dom->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'AuthnRequest')->item(0);
@@ -146,7 +146,7 @@ try {
         $sigAlg = $request->getQueryParameter('SigAlg');
         $signature = Base64::decode($request->getQueryParameter('Signature'));
 
-        $httpQuery = \http_build_query(
+        $httpQuery = http_build_query(
             [
                 'SAMLRequest' => $request->getQueryParameter('SAMLRequest'),
                 'RelayState' => $request->getQueryParameter('RelayState'),
@@ -154,7 +154,7 @@ try {
             ]
         );
         $rsaKey = new Key($signingKey);
-        if (1 !== \openssl_verify($httpQuery, $signature, $rsaKey->getPublicKey(), OPENSSL_ALGO_SHA256)) {
+        if (1 !== openssl_verify($httpQuery, $signature, $rsaKey->getPublicKey(), OPENSSL_ALGO_SHA256)) {
             throw new Exception('signature invalid');
         }
     }
@@ -182,9 +182,9 @@ try {
 
     $identifierSourceAttribute = $config->get('identifierSourceAttribute');
     $persistentId = Base64UrlSafe::encodeUnpadded(
-        \hash(
+        hash(
             'sha256',
-            \sprintf('%s|%s|%s|%s', $secretSalt, $identifierSourceAttribute, $idpEntityId, $spEntityId),
+            sprintf('%s|%s|%s|%s', $secretSalt, $identifierSourceAttribute, $idpEntityId, $spEntityId),
             true
         )
     );
@@ -193,7 +193,7 @@ try {
     $samlResponse->setAttribute(
         'urn:oasis:names:tc:SAML:attribute:pairwise-id',
         [
-            \sprintf('%s@%s', $persistentId, $config->get('identifierScope')),
+            sprintf('%s@%s', $persistentId, $config->get('identifierScope')),
         ]
     );
     foreach ($userInfo->getAttributes() as $k => $v) {
@@ -202,25 +202,25 @@ try {
 
     $identifierSourceAttributeValue = $userInfo->getAttribute($config->get('identifierSourceAttribute'))[0];
     $persistentId = Base64UrlSafe::encodeUnpadded(
-        \hash(
+        hash(
             'sha256',
-            \sprintf('%s|%s|%s|%s', $secretSalt, $identifierSourceAttributeValue, $idpEntityId, $spEntityId),
+            sprintf('%s|%s|%s|%s', $secretSalt, $identifierSourceAttributeValue, $idpEntityId, $spEntityId),
             true
         )
     );
 
-    $eduPersonTargetedId = \sprintf('%s!%s!%s', $idpEntityId, $spEntityId, $persistentId);
-    \error_log($identifierSourceAttributeValue.':'.$eduPersonTargetedId);
+    $eduPersonTargetedId = sprintf('%s!%s!%s', $idpEntityId, $spEntityId, $persistentId);
+    error_log($identifierSourceAttributeValue.':'.$eduPersonTargetedId);
 
     $samlResponse->setAttribute('urn:oid:1.3.6.1.4.1.5923.1.1.1.10', [$persistentId]);
     $samlResponse->setAttribute(
         'urn:oasis:names:tc:SAML:attribute:pairwise-id',
         [
-            \sprintf('%s@%s', $persistentId, $config->get('identifierScope')),
+            sprintf('%s@%s', $persistentId, $config->get('identifierScope')),
         ]
     );
 
-    $transientNameId = Base64UrlSafe::encodeUnpadded(\random_bytes(32));
+    $transientNameId = Base64UrlSafe::encodeUnpadded(random_bytes(32));
     $session->set($spEntityId, ['transientNameId' => $transientNameId]);
 
     $displayName = $spEntityId;
@@ -233,7 +233,8 @@ try {
     $responseXml = $samlResponse->getAssertion($spConfig, $spEntityId, $idpEntityId, $authnRequestId, $transientNameId);
     $response = new HtmlResponse(
         $tpl->render(
-            'submit', [
+            'submit',
+            [
                 'spEntityId' => $spEntityId,
                 'displayName' => $displayName,
                 'relayState' => $relayState,

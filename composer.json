@@ -12,6 +12,12 @@
         }
     },
     "name": "fkooman/php-saml-idp",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://git.tuxed.net/fkooman/php-sqlite-migrate"
+        }
+    ],
     "require": {
         "ext-date": "*",
         "ext-dom": "*",
@@ -21,6 +27,7 @@
         "ext-spl": "*",
         "ext-zlib": "*",
         "fkooman/secookie": "^2",
+        "fkooman/sqlite-migrate": "^0.1",
         "paragonie/constant_time_encoding": "^1|^2",
         "paragonie/random_compat": ">=1",
         "php": ">=5.4",

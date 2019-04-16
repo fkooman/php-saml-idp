@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2018 François Kooman <fkooman@tuxed.net>
+ * Copyright (c) 2019 François Kooman <fkooman@tuxed.net>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@ class ErrorHandler
      */
     public static function register()
     {
-        \set_error_handler([__CLASS__, 'customHandler']);
+        set_error_handler([__CLASS__, 'customHandler']);
     }
 
     /**
@@ -46,10 +46,11 @@ class ErrorHandler
      */
     public static function customHandler($errno, $errstr, $errfile, $errline)
     {
-        if (!(\error_reporting() & $errno)) {
+        if (!(error_reporting() & $errno)) {
             // This error code is not included in error_reporting
             return;
         }
+
         throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2018 François Kooman <fkooman@tuxed.net>
+ * Copyright (c) 2019 François Kooman <fkooman@tuxed.net>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-require_once \dirname(__DIR__).'/vendor/autoload.php';
-$baseDir = \dirname(__DIR__);
+require_once dirname(__DIR__).'/vendor/autoload.php';
+$baseDir = dirname(__DIR__);
 
 use fkooman\SAML\IdP\ErrorHandler;
 use fkooman\SAML\IdP\Template;
@@ -32,14 +32,14 @@ use fkooman\SeCookie\Session;
 
 ErrorHandler::register();
 
-$tpl = new Template([\sprintf('%s/views', $baseDir)]);
+$tpl = new Template([sprintf('%s/views', $baseDir)]);
 
 try {
     $session = new Session(
         [],
         new Cookie(
             [
-               'SameSite' => 'Lax',
+                'SameSite' => 'Lax',
             ]
         )
     );
