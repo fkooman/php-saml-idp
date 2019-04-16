@@ -1,8 +1,8 @@
-%global git dadbfccddaf1b2cb7f77b913ccad934d4abebf34
+%global git 522d6447bad0ce1328bf7fd2d294a441a503fcd8
 
 Name:       php-saml-idp
 Version:    0.0.0
-Release:    0.65%{?dist}
+Release:    0.67%{?dist}
 Summary:    SAML IdP
 
 Group:      Applications/Internet
@@ -118,10 +118,11 @@ AUTOLOAD
 %install
 mkdir -p %{buildroot}%{_datadir}/%{name}
 mkdir -p %{buildroot}%{_datadir}/php/fkooman/SAML/IdP
+install -m 0755 -D -p bin/init.php %{buildroot}%{_bindir}/php-saml-idp-init
 install -m 0755 -D -p bin/generate-salt.php %{buildroot}%{_bindir}/php-saml-idp-generate-salt
 install -m 0755 -D -p bin/add-user.php %{buildroot}%{_bindir}/php-saml-idp-add-user
 cp -pr src/* %{buildroot}%{_datadir}/php/fkooman/SAML/IdP
-cp -pr schema views locale web %{buildroot}%{_datadir}/%{name}
+cp -pr locale web %{buildroot}%{_datadir}/%{name}
 
 mkdir -p %{buildroot}%{_sysconfdir}/%{name}
 cp -pr config/config.php.example %{buildroot}%{_sysconfdir}/%{name}/config.php
@@ -141,205 +142,14 @@ install -m 0644 -D -p %{SOURCE3} %{buildroot}%{_sysconfdir}/httpd/conf.d/%{name}
 %dir %{_datadir}/php/fkooman/SAML
 %{_datadir}/php/fkooman/SAML/IdP
 %{_datadir}/%{name}/web
-%{_datadir}/%{name}/views
 %{_datadir}/%{name}/locale
-%{_datadir}/%{name}/schema
 %{_datadir}/%{name}/config
 %doc README.md CHANGES.md composer.json config/config.php.example config/metadata.php.example
 %license LICENSE
 
 %changelog
-* Mon Feb 25 2019 François Kooman <fkooman@tuxed.net> - 0.0.0-0.65
+* Tue Apr 16 2019 François Kooman <fkooman@tuxed.net> - 0.0.0-0.67
 - rebuilt
 
-* Thu Feb 21 2019 François Kooman <fkooman@tuxed.net> - 0.0.0-0.64
+* Tue Apr 16 2019 François Kooman <fkooman@tuxed.net> - 0.0.0-0.66
 - rebuilt
-
-* Fri Jan 25 2019 François Kooman <fkooman@tuxed.net> - 0.0.0-0.63
-- rebuilt
-
-* Sun Jan 20 2019 François Kooman <fkooman@tuxed.net> - 0.0.0-0.62
-- rebuilt
-
-* Tue Jan 08 2019 François Kooman <fkooman@tuxed.net> - 0.0.0-0.61
-- rebuilt
-
-* Wed Jan 02 2019 François Kooman <fkooman@tuxed.net> - 0.0.0-0.60
-- rebuilt
-
-* Sun Dec 30 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.59
-- rebuilt
-
-* Thu Dec 27 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.58
-- rebuilt
-
-* Wed Dec 26 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.57
-- rebuilt
-
-* Wed Dec 26 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.56
-- rebuilt
-
-* Wed Dec 26 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.55
-- rebuilt
-
-* Wed Dec 26 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.54
-- rebuilt
-
-* Wed Dec 26 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.53
-- rebuilt
-
-* Wed Dec 26 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.52
-- rebuilt
-
-* Wed Dec 26 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.51
-- rebuilt
-
-* Wed Dec 26 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.50
-- rebuilt
-
-* Wed Dec 26 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.49
-- rebuilt
-
-* Mon Dec 24 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.48
-- rebuilt
-
-* Mon Dec 24 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.47
-- rebuilt
-
-* Sun Dec 23 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.46
-- rebuilt
-
-* Sun Dec 23 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.45
-- rebuilt
-
-* Sun Dec 23 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.44
-- rebuilt
-
-* Sun Dec 23 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.43
-- rebuilt
-
-* Sun Dec 23 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.42
-- rebuilt
-
-* Sun Dec 23 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.41
-- rebuilt
-
-* Sun Dec 23 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.40
-- rebuilt
-
-* Sun Dec 23 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.39
-- rebuilt
-
-* Sat Dec 22 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.38
-- rebuilt
-
-* Sat Dec 22 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.37
-- rebuilt
-
-* Sat Dec 22 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.36
-- rebuilt
-
-* Fri Dec 21 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.35
-- rebuilt
-
-* Fri Dec 21 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.34
-- rebuilt
-
-* Thu Dec 20 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.33
-- rebuilt
-
-* Wed Dec 19 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.32
-- rebuilt
-
-* Wed Dec 19 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.31
-- rebuilt
-
-* Wed Dec 19 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.30
-- rebuilt
-
-* Wed Dec 19 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.29
-- rebuilt
-
-* Wed Dec 19 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.28
-- rebuilt
-
-* Wed Dec 19 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.27
-- rebuilt
-
-* Wed Dec 19 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.26
-- rebuilt
-
-* Wed Dec 19 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.25
-- rebuilt
-
-* Wed Dec 19 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.24
-- rebuilt
-
-* Tue Dec 18 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.23
-- rebuilt
-
-* Tue Dec 18 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.22
-- rebuilt
-
-* Tue Dec 18 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.21
-- rebuilt
-
-* Tue Dec 18 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.20
-- rebuilt
-
-* Tue Dec 18 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.19
-- rebuilt
-
-* Tue Dec 18 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.18
-- rebuilt
-
-* Mon Dec 17 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.17
-- rebuilt
-
-* Mon Dec 17 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.16
-- rebuilt
-
-* Mon Dec 17 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.15
-- rebuilt
-
-* Mon Dec 17 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.14
-- rebuilt
-
-* Mon Dec 17 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.13
-- rebuilt
-
-* Thu Sep 27 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.12
-- rebuilt
-
-* Mon Sep 24 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.11
-- rebuilt
-
-* Mon Sep 24 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.10
-- rebuilt
-
-* Mon Sep 24 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.9
-- rebuilt
-
-* Mon Sep 24 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.8
-- rebuilt
-
-* Mon Sep 24 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.7
-- rebuilt
-
-* Mon Sep 24 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.6
-- rebuilt
-
-* Mon Sep 24 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.5
-- rebuilt
-
-* Mon Sep 24 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.4
-- rebuilt
-
-* Mon Sep 24 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.3
-- rebuilt
-
-* Mon Sep 24 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.2
-- rebuilt
-
-* Sat Sep 22 2018 François Kooman <fkooman@tuxed.net> - 0.0.0-0.1
-- initial package
