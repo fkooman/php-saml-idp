@@ -34,9 +34,6 @@ class Storage
     /** @var \PDO */
     private $db;
 
-    /** @var \DateTime */
-    private $dateTime;
-
     /** @var \fkooman\SqliteMigrate\Migration */
     private $migration;
 
@@ -75,7 +72,7 @@ class Storage
                 attribute_hash = :attribute_hash'
         );
 
-        $stmt->bindValue(':user_id', $authUser, PDO::PARAM_STR);
+        $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
         $stmt->bindValue(':sp_entity_id', $spEntityId, PDO::PARAM_STR);
         $stmt->bindValue(':attribute_hash', $attributeHash, PDO::PARAM_STR);
         $stmt->execute();
