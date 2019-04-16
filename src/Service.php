@@ -76,14 +76,14 @@ class Service
 
                 return $this->processRequest($request);
             case 'POST':
-                switch ($request->getPathInfo()) {
-                    case '/auth':
+//                switch ($request->getPathInfo()) {
+//                    case '/auth':
                         $this->handleAuth($request);
 
                         return $this->processRequest($request);
-                    default:
-                        throw new Exception('404');
-                }
+//                    default:
+//                        throw new Exception('404');
+//                }
 
                 break;
             default:
@@ -131,6 +131,8 @@ class Service
 
         $authnRequestElement = XmlDocument::requireDomElement($requestDocument->domXPath->query('/samlp:AuthnRequest')->item(0));
 
+//        var_dump($authnRequestElement);
+
         // XXX validate it actually is an AuthnRequest!
 //        $authnRequest = $dom->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'AuthnRequest')->item(0);
 //        $authnRequestId = $authnRequest->getAttribute('ID');
@@ -140,7 +142,13 @@ class Service
 
         $userInfo = $this->session->get('userInfo');
 
-        $issuerElement = XmlDocument::requireDomElement($requestDocument->domXPath->query('/samlp:AuthnRequest/saml:Issuer'));
+//        $foo = $requestDocument->domXPath->query('/samlp:AuthnRequest/saml:Issuer');
+//        var_dump($foo->item(0));
+
+        $issuerElement = XmlDocument::requireDomElement($requestDocument->domXPath->query('/samlp:AuthnRequest/saml:Issuer')->item(0));
+
+//        var_dump($issuerElement);
+
         $spEntityId = $issuerElement->textContent;
 
 //        $spEntityId = $dom->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Issuer')->item(0)->nodeValue;
