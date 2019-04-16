@@ -2,3 +2,4 @@
 /config/*.crt
 /config/*.key
 /vendor
+/data

@@ -41,7 +41,7 @@
                 <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml:AuthnContextClassRef>
             </saml:AuthnContext>
         </saml:AuthnStatement>
-<?php if (0 !== \count($attributeList)): ?>
+<?php if (0 !== count($attributeList)): ?>
         <saml:AttributeStatement>
 <?php foreach ($attributeList as $attributeName => $attributeValueList): ?>
             <saml:Attribute Name="<?=$this->e($attributeName); ?>" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">

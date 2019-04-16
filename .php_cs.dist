@@ -9,6 +9,8 @@ return PhpCsFixer\Config::create()
             '@PhpCsFixer' => true,
             '@PhpCsFixer:risky' => true,
             'phpdoc_no_empty_return' => false,
+            'no_short_echo_tag' => false,
+            'no_alternative_syntax' => false,
             'header_comment' => [
                 'header' => <<< 'EOD'
 Copyright (c) 2019 François Kooman <fkooman@tuxed.net>
