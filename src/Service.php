@@ -86,7 +86,15 @@ class Service
                             );
                         }
 
-                        return $this->processRequest($request);
+                        return $this->processSso($request);
+                    case '/slo':
+                        if (false === $this->isAuthenticated($request)) {
+                            return new HtmlResponse(
+                                $this->tpl->render('auth')
+                            );
+                        }
+
+                        return $this->processSlo($request);
                     default:
                         throw new HttpException('404');
                 }
@@ -97,7 +105,7 @@ class Service
                     case '/sso':
                         $this->handleAuth($request);
 
-                        return $this->processRequest($request);
+                        return $this->processSso($request);
                     default:
                         throw new HttpException('404');
                 }
@@ -171,7 +179,7 @@ class Service
     /**
      * @return \fkooman\SAML\IdP\Http\Response
      */
-    private function processRequest(Request $request)
+    private function processSso(Request $request)
     {
         $userAttributeList = [];
         $idpEntityId = $request->getRootUri().'metadata';
@@ -318,6 +326,140 @@ class Service
                     'attributeMapping' => SAMLResponse::getAttributeMapping(),
                 ]
             )
+        );
+    }
+
+    /**
+     * @return \fkooman\SAML\IdP\Http\Response
+     */
+    private function processSlo(Request $request)
+    {
+        // XXX we do NOT verify the signature here, we MUST according to saml2int spec
+
+        // XXX input validation of everything
+        $samlRequest = gzinflate(Base64::decode($request->getQueryParameter('SAMLRequest'), true));
+
+        $requestDocument = XmlDocument::fromProtocolMessage($samlRequest);
+
+        $logoutRequestElement = XmlDocument::requireDomElement($requestDocument->domXPath->query('/samlp:LogoutRequest')->item(0));
+
+        // XXX validate it actually is an LogoutRequest!
+//        $logoutRequest = $dom->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'LogoutRequest')->item(0);
+        $logoutRequestId = $logoutRequestElement->getAttribute('ID');
+
+        // XXX do we need to validate the signature?! mod_auth_mellon adds a signature it seems... check saml2int
+
+        $issuerElement = XmlDocument::requireDomElement($requestDocument->domXPath->query('/samlp:LogoutRequest/saml:Issuer')->item(0));
+        $spEntityId = $issuerElement->textContent;
+
+        // 2. verify if we know the issuer <saml:Issuer>, i.e. is an existing entityID in the metadata
+//        $spEntityId = $dom->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Issuer')->item(0)->nodeValue;
+        if (false === $this->metadataConfig->has($spEntityId)) {
+            throw new RuntimeException('SP not registered here');
+        }
+
+        $spConfig = $this->metadataConfig->get($spEntityId);
+
+        // do we have a signing key for this SP?
+        // maybe it is good enough to enforce signature checking iff we have a
+        // public key for the SP...
+        if ($spConfig->has('signingKey')) {
+            $signingKey = $spConfig->get('signingKey');
+            $sigAlg = $request->getQueryParameter('SigAlg');
+            $signature = Base64::decode($request->getQueryParameter('Signature'));
+
+            $httpQuery = http_build_query(
+                [
+                    'SAMLRequest' => $request->getQueryParameter('SAMLRequest'),
+                    'RelayState' => $request->getQueryParameter('RelayState'),
+                    'SigAlg' => 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
+                ]
+            );
+            $rsaKey = new Key($signingKey);
+            if (1 !== openssl_verify($httpQuery, $signature, $rsaKey->getPublicKey(), OPENSSL_ALGO_SHA256)) {
+                throw new RuntimeException('signature invalid');
+            }
+        }
+
+        // 1. verify "Destination"
+        $ourSlo = $request->getRootUri().'slo';
+        $ourEntityId = $request->getRootUri().'metadata';
+
+        $destSlo = $logoutRequestElement->getAttribute('Destination');
+
+        if (false === hash_equals($ourSlo, $destSlo)) {
+            throw new RuntimeException('specified destination is not our destination');
+        }
+
+        // 3. see if we the transient ID provided is also set in the user's session for
+        //    this SP
+        if (false === $this->session->has($spEntityId)) {
+            throw new RuntimeException('no session for this SP');
+        }
+//        $logoutRequestTransientNameId = $dom->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'NameID')->item(0)->nodeValue;
+
+        $nameIdElement = XmlDocument::requireDomElement($requestDocument->domXPath->query('/samlp:LogoutRequest/saml:NameID')->item(0));
+        $nameIdValue = $nameIdElement->textContent;
+
+        // XXX make sure the attributes are correct, i.e. SPNameQualifier, Format
+        $transientNameId = $this->session->get($spEntityId)['transientNameId'];
+        if (false === hash_equals($transientNameId, $nameIdValue)) {
+            throw new RuntimeException('provided transient NameID does not match expected value');
+        }
+
+        // 4. XXX do something with sessionindex?!
+
+        // 5. kill the user's session (?)
+        $this->session->destroy();
+
+        // XXX all seems to be fine at this point, log the user out, and send a
+        // LogoutResponse
+
+        $sloUrl = $this->metadataConfig->get($spEntityId)->get('sloUrl');
+
+        $responseXml = $this->tpl->render(
+            'logoutResponse',
+            [
+                'id' => '_'.bin2hex(random_bytes(32)),
+                'issueInstant' => $this->dateTime->format('Y-m-d\TH:i:s\Z'),
+                'destination' => $sloUrl,
+                'inResponseTo' => $logoutRequestId,
+                'issuer' => $ourEntityId,
+            ]
+        );
+
+        $httpQuery = http_build_query(
+            [
+                'SAMLResponse' => Base64::encode(gzdeflate($responseXml)),
+                'RelayState' => $request->getQueryParameter('RelayState'),
+                'SigAlg' => 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
+            ]
+        );
+
+        $rsaKey = Key::fromFile($this->baseDir.'/config/server.key');
+
+        // calculate the signature over httpQuery
+        // add it to the query string
+        openssl_sign(
+            $httpQuery,
+            $signedInfoSignature,
+            $rsaKey->getPrivateKey(),
+            OPENSSL_ALGO_SHA256
+        );
+
+        $httpQuery .= '&'.http_build_query(
+            [
+                'Signature' => Base64::encode($signedInfoSignature),
+            ]
+        );
+
+        // XXX make sure it does not already have a "?" in the SLO URL!
+        $sloUrl = $sloUrl.'?'.$httpQuery;
+
+        return new Response(
+            '',
+            ['Location' => $sloUrl],
+            302
         );
     }
 }

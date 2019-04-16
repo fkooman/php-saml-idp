@@ -52,6 +52,8 @@ try {
         $secureCookie = $config->get('secureCookie');
     }
 
+//    error_log(var_export($secureCookie, true));
+
     $session = new Session(
         [],
         new Cookie(
