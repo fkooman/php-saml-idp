@@ -208,10 +208,27 @@ class Request
      */
     public function getPathInfo()
     {
-        if (!\array_key_exists('PATH_INFO', $this->serverData)) {
+        // remove the query string
+        $requestUri = $this->serverData['REQUEST_URI'];
+        if (false !== $pos = strpos($requestUri, '?')) {
+            $requestUri = substr($requestUri, 0, $pos);
+        }
+
+        // if requestUri === scriptName
+        if ($this->serverData['REQUEST_URI'] === $this->serverData['SCRIPT_NAME']) {
             return '/';
         }
 
-        return $this->serverData['PATH_INFO'];
+        // remove script_name (if it is part of request_uri
+        if (0 === strpos($requestUri, $this->serverData['SCRIPT_NAME'])) {
+            return substr($requestUri, \strlen($this->serverData['SCRIPT_NAME']));
+        }
+
+        // remove the root
+        if ('/' !== $this->getRoot()) {
+            return substr($requestUri, \strlen($this->getRoot()) - 1);
+        }
+
+        return $requestUri;
     }
 }
