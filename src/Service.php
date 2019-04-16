@@ -96,7 +96,7 @@ class Service
 
                         return $this->processSlo($request);
                     default:
-                        throw new HttpException('404');
+                        throw new HttpException('page not found', 404);
                 }
 
                 break;
@@ -107,12 +107,15 @@ class Service
 
                         return $this->processSso($request);
                     default:
-                        throw new HttpException('404');
+                        throw new HttpException('page not found', 404);
                 }
 
                 break;
             default:
-                throw new HttpException('405');
+                $e = new HttpException('invalid method', 405);
+                $e->setHeaders(['Allow' => 'HEAD,GET,POST']);
+
+                throw $e;
         }
     }
 
