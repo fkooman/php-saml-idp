@@ -6,6 +6,7 @@
     <directory name="web"/>
     <ignoreFiles>
       <directory name="vendor"/>
+      <directory name="src/tpl"/>
     </ignoreFiles>
   </projectFiles>
 </psalm>

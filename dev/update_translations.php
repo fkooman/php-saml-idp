@@ -23,7 +23,7 @@
  */
 
 $localeFileList = glob(dirname(__DIR__).'/locale/*.php');
-$tplFileList = glob(dirname(__DIR__).'/views/*.php');
+$tplFileList = glob(dirname(__DIR__).'/src/tpl/*.php');
 
 // extract all translatable strings from the PHP templates and put them in an
 // array

@@ -1,12 +1,37 @@
 body {
     margin: 3rem auto;
-    max-width: 60rem;
+    max-width: 50rem;
+}
+
+form {
+    width: 100%;
+}
+
+label {
+    font-weight: bold;
+}
+
+input[type="text"], input[type="password"] {
+    width: 100%;
+    margin-bottom: 1em;
 }
 
 table {
     width: 100%;
 }
 
+th, td {
+    padding: 0.5em;
+}
+
 div.footer {
     text-align: center;
+}
+
+ul {
+    padding:0;
+}
+
+li {
+    list-style: none;
 }

@@ -24,6 +24,8 @@
 
 namespace fkooman\SAML\IdP;
 
+use fkooman\SAML\IdP\Http\Exception\HttpException;
+
 class LdapAuth
 {
     /** @var Config */
@@ -68,7 +70,7 @@ class LdapAuth
 
         if (1 !== $ldapEntries['count']) {
             // user does not exist XXX
-            throw new \Exception('user does not exist or multiple responses?!');
+            throw new HttpException('user does not exist or multiple responses?!', 401);
         }
 
         $userAttributes = [];

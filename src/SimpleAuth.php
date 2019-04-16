@@ -24,6 +24,8 @@
 
 namespace fkooman\SAML\IdP;
 
+use fkooman\SAML\IdP\Http\Exception\HttpException;
+
 class SimpleAuth
 {
     /** @var Config */
@@ -43,11 +45,11 @@ class SimpleAuth
     public function authenticate($authUser, $authPass)
     {
         if (!$this->config->has($authUser)) {
-            throw new \Exception('no such user');
+            throw new HttpException('no such user', 401);
         }
 
         if (!password_verify($authPass, $this->config->get($authUser)->get('authPassHash'))) {
-            throw new \Exception('invalid password');
+            throw new HttpException('invalid password', 401);
         }
 
         return new UserInfo($authUser, $this->config->get($authUser)->get('attributeList')->toArray());

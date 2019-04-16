@@ -27,6 +27,7 @@ $baseDir = dirname(__DIR__);
 
 use fkooman\SAML\IdP\Config;
 use fkooman\SAML\IdP\ErrorHandler;
+use fkooman\SAML\IdP\Http\Exception\HttpException;
 use fkooman\SAML\IdP\Http\HtmlResponse;
 use fkooman\SAML\IdP\Http\Request;
 use fkooman\SAML\IdP\Service;
@@ -38,8 +39,8 @@ ErrorHandler::register();
 
 $tpl = new Template(
     [
-        sprintf('%s/views', $baseDir),
-        sprintf('%s/config/views', $baseDir),
+        sprintf('%s/src/tpl', $baseDir),
+        sprintf('%s/config/tpl', $baseDir),
     ]
 );
 
@@ -52,8 +53,6 @@ try {
         $secureCookie = $config->get('secureCookie');
     }
 
-//    error_log(var_export($secureCookie, true));
-
     $session = new Session(
         [],
         new Cookie(
@@ -65,6 +64,13 @@ try {
     );
     $service = new Service($baseDir, $config, $metadataConfig, $session, $tpl);
     $response = $service->run(new Request($_SERVER, $_GET, $_POST));
+    $response->send();
+} catch (HttpException $e) {
+    $response = new HtmlResponse(
+        $tpl->render('error', ['errorCode' => $e->getCode(), 'errorMessage' => $e->getMessage()]),
+        $e->getHeaders(),
+        $e->getCode()
+    );
     $response->send();
 } catch (Exception $e) {
     $response = new HtmlResponse(
