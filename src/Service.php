@@ -26,6 +26,7 @@ namespace fkooman\SAML\IdP;
 
 use DateInterval;
 use DateTime;
+use DateTimeZone;
 use fkooman\SAML\IdP\Http\Exception\HttpException;
 use fkooman\SAML\IdP\Http\HtmlResponse;
 use fkooman\SAML\IdP\Http\Request;
@@ -66,6 +67,7 @@ class Service
         $this->session = $session;
         $this->tpl = $tpl;
         $this->dateTime = new DateTime();
+        $this->dateTime->setTimeZone(new DateTimeZone('UTC'));
     }
 
     /**

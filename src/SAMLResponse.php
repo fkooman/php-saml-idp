@@ -26,6 +26,7 @@ namespace fkooman\SAML\IdP;
 
 use DateInterval;
 use DateTime;
+use DateTimeZone;
 use DOMDocument;
 use ParagonIE\ConstantTime\Base64;
 
@@ -52,6 +53,7 @@ class SAMLResponse
         $this->rsaKey = $rsaKey;
         $this->rsaCert = $rsaCert;
         $this->dateTime = new DateTime();
+        $this->dateTime->setTimeZone(new DateTimeZone('UTC'));
     }
 
     /**
