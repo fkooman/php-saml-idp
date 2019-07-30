@@ -274,9 +274,9 @@ class Service
             )
         );
 
-        $samlResponse->setAttribute('urn:oid:1.3.6.1.4.1.5923.1.1.1.10', [$persistentId]);
+        $samlResponse->setAttribute('eduPersonTargetedID', [$persistentId]);
         $samlResponse->setAttribute(
-            'urn:oasis:names:tc:SAML:attribute:pairwise-id',
+            'pairwise-id',
             [
                 sprintf('%s@%s', $persistentId, $this->config->get('identifierScope')),
             ]
@@ -297,9 +297,9 @@ class Service
         $eduPersonTargetedId = sprintf('%s!%s!%s', $idpEntityId, $spEntityId, $persistentId);
         error_log($identifierSourceAttributeValue.':'.$eduPersonTargetedId);
 
-        $samlResponse->setAttribute('urn:oid:1.3.6.1.4.1.5923.1.1.1.10', [$persistentId]);
+        $samlResponse->setAttribute('eduPersonTargetedID', [$persistentId]);
         $samlResponse->setAttribute(
-            'urn:oasis:names:tc:SAML:attribute:pairwise-id',
+            'pairwise-id',
             [
                 sprintf('%s@%s', $persistentId, $this->config->get('identifierScope')),
             ]

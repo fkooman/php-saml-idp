@@ -167,28 +167,48 @@ class SAMLResponse
     }
 
     /**
-     * @param array<string> $attributeReleaseList
-     * @param array<string> $attributeMapping
+     * @param array<string>        $attributeReleaseList
+     * @param array<string,string> $attributeMapping
      *
      * @return array<string,array<string>>
      */
     private function prepareAttributes(array $attributeReleaseList, array $attributeMapping)
     {
-        // apply mapping
-        foreach ($attributeMapping as $k => $v) {
-            if (\array_key_exists($k, $this->attributeList)) {
-                $this->attributeList[$v] = $this->attributeList[$k];
-            }
-        }
+        // 1. figure out which attributes to release
+        /** @var array<string,array<string>> */
+        $friendlyAttributeList = [];
 
-        // only release the attributes we want to expose
-        $filteredAttributeList = [];
         foreach ($this->attributeList as $k => $v) {
             if (\in_array($k, $attributeReleaseList, true)) {
-                $filteredAttributeList[$k] = $v;
+                $friendlyAttributeList[$k] = $v;
             }
         }
 
-        return $filteredAttributeList;
+        // 2. apply mapping, convert them to urn:oid AttributeName, only release
+        //    the ones we know about...
+
+        /** @var array<string,array<string>> */
+        $oidAttributeList = [];
+
+        /** @var array<string,string> */
+        $oidAttributeMapping = array_flip(self::getAttributeMapping());
+
+        foreach ($friendlyAttributeList as $k => $v) {
+            if (\array_key_exists($k, $oidAttributeMapping)) {
+                $oidAttributeList[$oidAttributeMapping[$k]] = $v;
+            }
+        }
+
+        // 3. in addition, we augment them by defined attributeMapping from
+        //    friendly name to wanted variant
+        foreach ($friendlyAttributeList as $k => $v) {
+            // XXX this could also release attributes that are not mapped to
+            // oid, maybe this is good?!
+            if (\array_key_exists($k, $attributeMapping)) {
+                $oidAttributeMapping[$attributeMapping[$k]] = $v;
+            }
+        }
+
+        return $oidAttributeList;
     }
 }
