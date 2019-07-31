@@ -7,13 +7,12 @@ return [
         'sloUrl' => 'https://sp.example.org/slo',
     ],
 
-    // eduPersonTargetedId & transient NameID
+    // eduPersonTargetedID & transient NameID
     'https://sp.example.org/saml' => [
         'acsUrl' => 'https://sp.example.org/acs',
         'sloUrl' => 'https://sp.example.org/slo',
         'attributeRelease' => [
-            'eduPersonTargetedId',
-            // Pairwise Subject Identifier
+            'eduPersonTargetedID',
             'pairwise-id',
         ],
     ],
