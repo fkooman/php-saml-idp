@@ -167,48 +167,46 @@ class SAMLResponse
     }
 
     /**
-     * @param array<string>        $attributeReleaseList
+     * @param array<string>        $attributeReleaseList list of "friendly" attributes to release to the SP
      * @param array<string,string> $attributeMapping
      *
      * @return array<string,array<string>>
      */
     private function prepareAttributes(array $attributeReleaseList, array $attributeMapping)
     {
-        // 1. figure out which attributes to release
-        /** @var array<string,array<string>> */
-        $friendlyAttributeList = [];
+        $oidToFriendlyAttributeMapping = self::getAttributeMapping();
+        $friendlyToOidAttributeMapping = array_flip($oidToFriendlyAttributeMapping);
 
-        foreach ($this->attributeList as $k => $v) {
-            if (\in_array($k, $attributeReleaseList, true)) {
-                $friendlyAttributeList[$k] = $v;
+        // determine which friendly attributes are:
+        // 1. valid according to our whitelist
+        // 2. actually available as an attribute for this user
+        $friendlyReleaseList = [];
+        foreach ($attributeReleaseList as $friendlyAttributeName) {
+            if (!\in_array($friendlyAttributeName, $oidToFriendlyAttributeMapping, true)) {
+                // we only release supported attributes
+                continue;
+            }
+            // check whether we have this attribute
+            if (!\array_key_exists($friendlyAttributeName, $this->attributeList)) {
+                continue;
+            }
+
+            $friendlyReleaseList[] = $friendlyAttributeName;
+        }
+
+        $releaseList = [];
+        foreach ($friendlyReleaseList as $friendlyAttributeName) {
+            if (!\array_key_exists($friendlyAttributeName, $attributeMapping)) {
+                // no mapping for this friendlyAttributeName available, convert
+                // to OID
+                $releaseList[$friendlyToOidAttributeMapping[$friendlyAttributeName]] = $this->attributeList[$friendlyAttributeName];
+            } else {
+                // mapping available, use the mapping instead of converting it
+                // to OID
+                $releaseList[$attributeMapping[$friendlyAttributeName]] = $this->attributeList[$friendlyAttributeName];
             }
         }
 
-        // 2. apply mapping, convert them to urn:oid AttributeName, only release
-        //    the ones we know about...
-
-        /** @var array<string,array<string>> */
-        $oidAttributeList = [];
-
-        /** @var array<string,string> */
-        $oidAttributeMapping = array_flip(self::getAttributeMapping());
-
-        foreach ($friendlyAttributeList as $k => $v) {
-            if (\array_key_exists($k, $oidAttributeMapping)) {
-                $oidAttributeList[$oidAttributeMapping[$k]] = $v;
-            }
-        }
-
-        // 3. in addition, we augment them by defined attributeMapping from
-        //    friendly name to wanted variant
-        foreach ($friendlyAttributeList as $k => $v) {
-            // XXX this could also release attributes that are not mapped to
-            // oid, maybe this is good?!
-            if (\array_key_exists($k, $attributeMapping)) {
-                $oidAttributeMapping[$attributeMapping[$k]] = $v;
-            }
-        }
-
-        return $oidAttributeList;
+        return $releaseList;
     }
 }
