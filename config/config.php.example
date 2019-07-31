@@ -43,7 +43,7 @@ return [
             'authPassHash' => '$2y$10$CKqxVMf4jdlRTWQokL09r./gAM//gpEPjQt9D2TISIydVVsOc39e2',
             'attributeList' => [
                 'uid' => ['foo'],
-                'cn' => ['Foo Bar'],
+                'displayName' => ['Foo Bar'],
                 'mail' => ['foo@example.org'],
             ],
         ],

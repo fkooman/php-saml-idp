@@ -33,22 +33,23 @@ return [
             'en' => 'SURFconext',
         ],
         'acsUrl' => 'https://engine.surfconext.nl/authentication/sp/consume-assertion',
+        'staticAttributeList' => [
+            // always add this attribute
+            'schacHomeOrganization' => ['example.org'],
+        ],
         'attributeRelease' => [
+            // release these attributes
             'uid',
             'schacHomeOrganization',
             'mail',
-            'cn',
+            'displayName',
         ],
-        // SURFconext requires the use of these exact URNs, they do not support
-        // the standard urn:oid format...
         'attributeMapping' => [
+            // we convert these attribute names to SURFconext-specific names
             'uid' => 'urn:mace:dir:attribute-def:uid',
             'mail' => 'urn:mace:dir:attribute-def:mail',
-            'cn' => 'urn:mace:dir:attribute-def:cn',
+            'displayName' => 'urn:mace:dir:attribute-def:displayName',
             'schacHomeOrganization' => 'urn:mace:terena.org:attribute-def:schacHomeOrganization',
-        ],
-        'staticAttributeList' => [
-            'schacHomeOrganization' => ['example.org'],
         ],
     ],
 ];
