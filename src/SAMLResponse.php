@@ -97,7 +97,6 @@ class SAMLResponse
         $assertionIssuer = $idpEntityId;
         $notBefore = $this->dateTime->sub(new DateInterval('PT3M'))->format('Y-m-d\TH:i:s\Z');
         $notOnOrAfter = $this->dateTime->add(new DateInterval('PT6M'))->format('Y-m-d\TH:i:s\Z');
-        $sessionNotOnOrAfter = $this->dateTime->add(new DateInterval('PT8H'))->format('Y-m-d\TH:i:s\Z');
         $assertionAudience = $spEntityId;
         $sessionIndex = '_'.bin2hex(random_bytes(16));
         $x509Certificate = $this->rsaCert->toKeyInfo();
@@ -115,7 +114,6 @@ class SAMLResponse
                 'assertionIssuer' => $assertionIssuer,
                 'notBefore' => $notBefore,
                 'noOnOrAfter' => $notOnOrAfter,
-                'sessionNotOnOrAfter' => $sessionNotOnOrAfter,
                 'assertionAudience' => $assertionAudience,
                 'x509Certificate' => $x509Certificate,
                 'attributeList' => $this->prepareAttributes(
