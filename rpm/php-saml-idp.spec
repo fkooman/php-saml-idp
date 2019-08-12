@@ -1,8 +1,8 @@
-%global git a26f54e4ff54e4ec2c05a075c0e06e03cf1ba88a
+%global git 14129c93cfe2fa23f49c29134435cc7b969e436d
 
 Name:       php-saml-idp
 Version:    0.0.0
-Release:    0.79%{?dist}
+Release:    0.80%{?dist}
 Summary:    SAML IdP
 
 Group:      Applications/Internet
@@ -151,6 +151,9 @@ install -m 0644 -D -p %{SOURCE3} %{buildroot}%{_sysconfdir}/httpd/conf.d/%{name}
 %license LICENSE
 
 %changelog
+* Mon Aug 12 2019 François Kooman <fkooman@tuxed.net> - 0.0.0-0.80
+- rebuilt
+
 * Mon Aug 12 2019 François Kooman <fkooman@tuxed.net> - 0.0.0-0.79
 - rebuilt
 
