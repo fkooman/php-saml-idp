@@ -25,28 +25,23 @@
 require_once dirname(__DIR__).'/vendor/autoload.php';
 $baseDir = dirname(__DIR__);
 
+use fkooman\SAML\IdP\Certificate;
 use fkooman\SAML\IdP\Config;
-use fkooman\SAML\IdP\ErrorHandler;
-use fkooman\SAML\IdP\Http\Exception\HttpException;
-use fkooman\SAML\IdP\Http\HtmlResponse;
 use fkooman\SAML\IdP\Http\Request;
+use fkooman\SAML\IdP\Http\Response;
+use fkooman\SAML\IdP\Key;
 use fkooman\SAML\IdP\Service;
 use fkooman\SAML\IdP\Template;
 use fkooman\SeCookie\Cookie;
 use fkooman\SeCookie\Session;
 
-ErrorHandler::register();
-
-$tpl = new Template(
-    [
-        sprintf('%s/src/tpl', $baseDir),
-        sprintf('%s/config/tpl', $baseDir),
-    ]
-);
-
 try {
+    $tpl = new Template([$baseDir.'/src/tpl', $baseDir.'/config/tpl']);
     $config = Config::fromFile($baseDir.'/config/config.php');
     $metadataConfig = Config::fromFile($baseDir.'/config/metadata.php');
+
+    $samlKey = Key::fromFile($baseDir.'/config/server.key');
+    $samlCert = Certificate::fromFile($baseDir.'/config/server.crt');
 
     $secureCookie = true;
     if ($config->has('secureCookie')) {
@@ -62,19 +57,11 @@ try {
             ]
         )
     );
-    $service = new Service($baseDir, $config, $metadataConfig, $session, $tpl);
-    $response = $service->run(new Request($_SERVER, $_GET, $_POST));
-    $response->send();
-} catch (HttpException $e) {
-    $response = new HtmlResponse(
-        $tpl->render('error', ['errorCode' => $e->getCode(), 'errorMessage' => $e->getMessage()]),
-        $e->getHeaders(),
-        $e->getCode()
-    );
-    $response->send();
+    $service = new Service($config, $metadataConfig, $session, $tpl, $samlKey, $samlCert);
+    $service->run(new Request($_SERVER, $_GET, $_POST))->send();
 } catch (Exception $e) {
-    $response = new HtmlResponse(
-        $tpl->render('error', ['errorCode' => 500, 'errorMessage' => $e->getMessage()]),
+    $response = new Response(
+        'ERROR: '.$e->getMessage(),
         [],
         500
     );

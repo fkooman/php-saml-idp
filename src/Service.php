@@ -38,8 +38,11 @@ use RuntimeException;
 
 class Service
 {
-    /** @var string */
-    private $baseDir;
+    /** @var Key */
+    private $samlKey;
+
+    /** @var Certificate */
+    private $samlCert;
 
     /** @var Config */
     private $config;
@@ -59,13 +62,14 @@ class Service
     /**
      * @param string $baseDir
      */
-    public function __construct($baseDir, Config $config, Config $metadataConfig, SessionInterface $session, Template $tpl)
+    public function __construct(Config $config, Config $metadataConfig, SessionInterface $session, Template $tpl, Key $samlKey, Certificate $samlCert)
     {
-        $this->baseDir = $baseDir;
         $this->config = $config;
         $this->metadataConfig = $metadataConfig;
         $this->session = $session;
         $this->tpl = $tpl;
+        $this->samlKey = $samlKey;
+        $this->samlCert = $samlCert;
         $this->dateTime = new DateTime();
         $this->dateTime->setTimeZone(new DateTimeZone('UTC'));
     }
@@ -75,49 +79,57 @@ class Service
      */
     public function run(Request $request)
     {
-        switch ($request->getMethod()) {
-            case 'GET':
-            case 'HEAD':
-                switch ($request->getPathInfo()) {
-                    case '/metadata':
-                        return $this->getMetadata($request);
-                    case '/sso':
-                        if (false === $this->isAuthenticated($request)) {
-                            return new HtmlResponse(
-                                $this->tpl->render('auth')
-                            );
-                        }
+        try {
+            switch ($request->getMethod()) {
+                case 'GET':
+                case 'HEAD':
+                    switch ($request->getPathInfo()) {
+                        case '/metadata':
+                            return $this->getMetadata($request);
+                        case '/sso':
+                            if (false === $this->isAuthenticated($request)) {
+                                return new HtmlResponse(
+                                    $this->tpl->render('auth')
+                                );
+                            }
 
-                        return $this->processSso($request);
-                    case '/slo':
-                        if (false === $this->isAuthenticated($request)) {
-                            return new HtmlResponse(
-                                $this->tpl->render('auth')
-                            );
-                        }
+                            return $this->processSso($request);
+                        case '/slo':
+                            if (false === $this->isAuthenticated($request)) {
+                                return new HtmlResponse(
+                                    $this->tpl->render('auth')
+                                );
+                            }
 
-                        return $this->processSlo($request);
-                    default:
-                        throw new HttpException('page not found', 404);
-                }
+                            return $this->processSlo($request);
+                        default:
+                            throw new HttpException('page not found', 404);
+                    }
 
-                break;
-            case 'POST':
-                switch ($request->getPathInfo()) {
-                    case '/sso':
-                        $this->handleAuth($request);
+                    break;
+                case 'POST':
+                    switch ($request->getPathInfo()) {
+                        case '/sso':
+                            $this->handleAuth($request);
 
-                        return $this->processSso($request);
-                    default:
-                        throw new HttpException('page not found', 404);
-                }
+                            return $this->processSso($request);
+                        default:
+                            throw new HttpException('page not found', 404);
+                    }
 
-                break;
-            default:
-                $e = new HttpException('invalid method', 405);
-                $e->setHeaders(['Allow' => 'HEAD,GET,POST']);
+                    break;
+                default:
+                    $e = new HttpException('invalid method', 405);
+                    $e->setHeaders(['Allow' => 'HEAD,GET,POST']);
 
-                throw $e;
+                    throw $e;
+            }
+        } catch (HttpException $e) {
+            return new HtmlResponse(
+                $this->tpl->render('error', ['errorCode' => $e->getCode(), 'errorMessage' => $e->getMessage()]),
+                $e->getHeaders(),
+                $e->getCode()
+            );
         }
     }
 
@@ -129,9 +141,7 @@ class Service
         $entityId = $request->getRootUri().'metadata';
         $ssoUri = $request->getRootUri().'sso';
         $sloUri = $request->getRootUri().'slo';
-
-        $rsaCert = Certificate::fromFile($this->baseDir.'/config/server.crt');
-        $keyInfo = $rsaCert->toKeyInfo();
+        $keyInfo = $this->samlCert->toKeyInfo();
 
         $validUntil = date_add(clone $this->dateTime, new DateInterval('PT24H'));
 
@@ -170,10 +180,7 @@ class Service
      */
     private function handleAuth(Request $request)
     {
-        // determine auth mech
-        $authMethod = $this->config->get('authMethod');
-        $authMethodClass = '\\fkooman\\SAML\\IdP\\'.ucfirst($authMethod);
-        $userAuthMethod = new $authMethodClass($this->config->get($authMethod));
+        $userAuthMethod = new SimpleAuth($this->config->get('SimpleAuth'));
 
         // set session crap
         // XXX failing auth throws exception?
@@ -248,8 +255,8 @@ class Service
 
         $samlResponse = new SAMLResponse(
             $this->tpl,
-            Key::fromFile($this->baseDir.'/config/server.key'),
-            Certificate::fromFile($this->baseDir.'/config/server.crt')
+            $this->samlKey,
+            $this->samlCert
         );
 
         // add common attributes
@@ -441,14 +448,12 @@ class Service
             ]
         );
 
-        $rsaKey = Key::fromFile($this->baseDir.'/config/server.key');
-
         // calculate the signature over httpQuery
         // add it to the query string
         openssl_sign(
             $httpQuery,
             $signedInfoSignature,
-            $rsaKey->getPrivateKey(),
+            $this->samlKey->getPrivateKey(),
             OPENSSL_ALGO_SHA256
         );
 

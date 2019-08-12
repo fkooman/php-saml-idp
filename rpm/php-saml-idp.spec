@@ -1,8 +1,8 @@
-%global git 2486394b5c5e93d0b3e0db2a0b5737143cabd4cf
+%global git adb792e0b67937f0a30f423d193035aafd8bcefb
 
 Name:       php-saml-idp
 Version:    0.0.0
-Release:    0.76%{?dist}
+Release:    0.78%{?dist}
 Summary:    SAML IdP
 
 Group:      Applications/Internet
@@ -33,9 +33,11 @@ BuildRequires:  %{_bindir}/phpab
 #        "ext-spl": "*",
 #        "ext-zlib": "*",
 #        "fkooman/secookie": "^2",
+#        "ircmaxell/password-compat": "^1.0",
 #        "paragonie/constant_time_encoding": "^1|^2",
 #        "paragonie/random_compat": ">=1",
-#        "php": ">=5.4"
+#        "php": ">=5.4",
+#        "symfony/polyfill-php56": "^1"
 #    }
 BuildRequires:  php(language) >= 5.4.0
 BuildRequires:  php-date
@@ -68,9 +70,11 @@ Requires:   httpd
 #        "ext-spl": "*",
 #        "ext-zlib": "*",
 #        "fkooman/secookie": "^2",
+#        "ircmaxell/password-compat": "^1.0",
 #        "paragonie/constant_time_encoding": "^1|^2",
 #        "paragonie/random_compat": ">=1",
-#        "php": ">=5.4"
+#        "php": ">=5.4",
+#        "symfony/polyfill-php56": "^1"
 #    }
 Requires:   php(language) >= 5.4.0
 Requires:   php-cli
@@ -118,7 +122,6 @@ AUTOLOAD
 %install
 mkdir -p %{buildroot}%{_datadir}/%{name}
 mkdir -p %{buildroot}%{_datadir}/php/fkooman/SAML/IdP
-install -m 0755 -D -p bin/init.php %{buildroot}%{_bindir}/php-saml-idp-init
 install -m 0755 -D -p bin/generate-salt.php %{buildroot}%{_bindir}/php-saml-idp-generate-salt
 install -m 0755 -D -p bin/add-user.php %{buildroot}%{_bindir}/php-saml-idp-add-user
 cp -pr src/* %{buildroot}%{_datadir}/php/fkooman/SAML/IdP
@@ -148,6 +151,12 @@ install -m 0644 -D -p %{SOURCE3} %{buildroot}%{_sysconfdir}/httpd/conf.d/%{name}
 %license LICENSE
 
 %changelog
+* Mon Aug 12 2019 François Kooman <fkooman@tuxed.net> - 0.0.0-0.78
+- rebuilt
+
+* Sun Aug 11 2019 François Kooman <fkooman@tuxed.net> - 0.0.0-0.77
+- rebuilt
+
 * Sun Aug 11 2019 François Kooman <fkooman@tuxed.net> - 0.0.0-0.76
 - rebuilt
 

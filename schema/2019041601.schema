@@ -1,5 +1,0 @@
-CREATE TABLE consent (
-    user_id VARCHAR(255) NOT NULL,
-    sp_entity_id VARCHAR(255) NOT NULL,
-    attribute_hash VARCHAR(255) NOT NULL
-);
