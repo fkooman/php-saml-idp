@@ -1,59 +1,69 @@
 div.header {
-    margin: 2rem 0;
-}
-
-div.auth, div.consent, div.error {
-    background-color: #fefefe;
-    margin: 3rem auto 1em auto;
-    max-width: 30rem;
-    border-radius: 0.5rem;
-    border: 1px solid #ddd;
-    padding: 2rem;
-}
-
-div.consent {
-    max-width: 50rem;
-}
-
-h1 {
+    width: 100%;
+    background-color: #000;
+    color: #fff;
+    padding: 1em;
     text-align: center;
 }
 
-form {
+div.auth {
+    max-width: 25em;
+    margin: 4em auto;
+}
+
+div.auth form {
     width: 100%;
 }
 
-label {
+div.auth form input {
+    width: 100%;
+}
+
+div.auth form button, div.consent form button {
+    margin-top: 1em;
+}
+
+div.auth form label {
     font-weight: bold;
+    display: block;
+    margin: 1em 0 0 0;
 }
 
-input[type="text"], input[type="password"] {
+div.consent {
+    max-width: 50em;
+    margin: 4em auto;
+}
+
+div.consent table {
     width: 100%;
-    margin-bottom: 1em;
+    border: 1px solid #ccc;
+    border-collapse: collapse;
 }
 
-table {
-    width: 100%;
+div.consent table thead tr {
+    background-color: #444;
+    color: #fff;
+    border-bottom: 1px solid #ccc;
 }
 
-th, td {
+div.consent table td, div.consent table th {
     padding: 0.5em;
 }
 
-th {
+div.consent table th {
     vertical-align: top;
 }
 
-ul {
-    padding-left: 1rem;
+div.consent table tbody tr:nth-child(even) {
+   background-color: #f4f4f4;
+}
+
+div.consent ul {
+    margin: 0;
+    padding: 0 1em;
 }
 
 div.footer {
     text-align: center;
     font-size: 85%;
-    color: #888;
-}
-
-div.footer a {
-    color: #444;
 }
