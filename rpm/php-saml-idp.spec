@@ -1,4 +1,4 @@
-%global git adb792e0b67937f0a30f423d193035aafd8bcefb
+%global git e1d26f06b280e7fd41907bd345d5d08b0f097496
 
 Name:       php-saml-idp
 Version:    0.0.0

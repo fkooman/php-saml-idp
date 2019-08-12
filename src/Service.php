@@ -180,7 +180,7 @@ class Service
      */
     private function handleAuth(Request $request)
     {
-        $userAuthMethod = new SimpleAuth($this->config->get('SimpleAuth'));
+        $userAuthMethod = new SimpleAuth($this->config->get('simpleAuth'));
 
         // set session crap
         // XXX failing auth throws exception?
