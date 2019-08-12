@@ -39,7 +39,7 @@ index dfcfdcf..7ce89e1 100644
  use ParagonIE\ConstantTime\Base64UrlSafe;
  
 diff --git a/web/index.php b/web/index.php
-index af9d4c6..020cca5 100644
+index af9d4c6..8d62183 100644
 --- a/web/index.php
 +++ b/web/index.php
 @@ -22,8 +22,8 @@
@@ -53,3 +53,12 @@ index af9d4c6..020cca5 100644
  
  use fkooman\SAML\IdP\Certificate;
  use fkooman\SAML\IdP\Config;
+@@ -36,7 +36,7 @@ use fkooman\SeCookie\Cookie;
+ use fkooman\SeCookie\Session;
+ 
+ try {
+-    $tpl = new Template([$baseDir.'/src/tpl', $baseDir.'/config/tpl']);
++    $tpl = new Template(['/usr/share/php/fkooman/SAML/IdP/tpl', $baseDir.'/config/tpl']);
+     $config = Config::fromFile($baseDir.'/config/config.php');
+     $metadataConfig = Config::fromFile($baseDir.'/config/metadata.php');
+ 
