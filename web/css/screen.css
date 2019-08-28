@@ -35,9 +35,9 @@ form.auth input[type=text], form.auth input[type=password] {
 }
 
 dl {
-	padding: 0.5em;
+	padding: 1em;
 	border: 1px solid #ddd;
-	background-color: #e8e8e8;
+	background-color: #fff;
 }
 
 dl ul {
