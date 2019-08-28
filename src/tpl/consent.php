@@ -1,29 +1,31 @@
 <?php $this->layout('base'); ?>
 <?php $this->start('main'); ?>
     <p>
-        <?=$this->t('The following information will be sent to <strong title="%spEntityId%">%displayName%</strong>.'); ?>
+        <?=$this->t('Personally identifying information will be sent to <strong title="%spEntityId%">%displayName%</strong> in order to authenticate.'); ?>
     </p>
 
-	<dl>
-<?php foreach ($attributeList as $attributeName => $attributeValueList): ?>
-	    <dt>
-<?php if (array_key_exists($attributeName, $attributeMapping)): ?>
-	        <span title="<?=$this->e($attributeName); ?>"><?=$this->e($attributeMapping[$attributeName]); ?></span>
-<?php else: ?>
-            <?=$this->e($attributeName); ?>
-<?php endif; ?>
-        </dt>
-        <dd>
-            <ul>
-<?php foreach ($attributeValueList as $attributeValue): ?>                    
-                <li><code><?=$this->e($attributeValue); ?></code></li>
-<?php endforeach; ?>
-            </ul>
-        </dd>
-<?php endforeach; ?>
-	</dl>
+	<details>
+		<dl>
+	<?php foreach ($attributeList as $attributeName => $attributeValueList): ?>
+		    <dt>
+	<?php if (array_key_exists($attributeName, $attributeMapping)): ?>
+		        <span title="<?=$this->e($attributeName); ?>"><?=$this->e($attributeMapping[$attributeName]); ?></span>
+	<?php else: ?>
+	            <?=$this->e($attributeName); ?>
+	<?php endif; ?>
+	        </dt>
+	        <dd>
+	            <ul>
+	<?php foreach ($attributeValueList as $attributeValue): ?>                    
+	                <li><code><?=$this->e($attributeValue); ?></code></li>
+	<?php endforeach; ?>
+	            </ul>
+	        </dd>
+	<?php endforeach; ?>
+		</dl>
+	</details>
 	
-    <form method="post" action="<?=$this->e($acsUrl); ?>">
+    <form class="consent" method="post" action="<?=$this->e($acsUrl); ?>">
         <input type="hidden" name="SAMLResponse" value="<?=$this->e($samlResponse); ?>">
         <?php if (null !== $relayState): ?>
             <input type="hidden" name="RelayState" value="<?=$this->e($relayState); ?>">
