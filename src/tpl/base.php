@@ -10,15 +10,15 @@
     <link rel="stylesheet" type="text/css" href="css/screen.css">
 </head>
 <body>
-    <div class="header">
-        <h1><?=$this->t('Identity Provider'); ?></h1>
-    </div> <!-- /header -->
-    <div class="content">
-        <?=$this->section('content'); ?>
-    </div> <!-- /content -->
+    <header>
+        <?=$this->t('Identity Provider'); ?>
+    </header>
+    <main>
+        <?=$this->section('main'); ?>
+    </main>
 
-    <div class="footer">
+    <footer>
         Powered by <a href="https://git.tuxed.net/fkooman/php-saml-idp/about/">php-saml-idp</a>
-    </div> <!-- /footer -->
+	</footer>
 </body>
 </html>

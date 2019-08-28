@@ -1,45 +1,33 @@
 <?php $this->layout('base'); ?>
-<?php $this->start('content'); ?>
-    <div class="consent">
+<?php $this->start('main'); ?>
     <p>
-        <?=$this->t('The following attribute(s) will be released to <strong title="%spEntityId%">%displayName%</strong>.'); ?>
+        <?=$this->t('The following information will be sent to <strong title="%spEntityId%">%displayName%</strong>.'); ?>
     </p>
 
-    <table>
-        <thead>
-            <tr><th><?=$this->t('Attribute'); ?></th><th><?=$this->t('Value(s)'); ?></th></tr>
-        </thead>
-        <tbody>
+	<dl>
 <?php foreach ($attributeList as $attributeName => $attributeValueList): ?>
-            <tr>
-                <th>
+	    <dt>
 <?php if (array_key_exists($attributeName, $attributeMapping)): ?>
-                <span title="<?=$this->e($attributeName); ?>"><?=$this->e($attributeMapping[$attributeName]); ?></span>
+	        <span title="<?=$this->e($attributeName); ?>"><?=$this->e($attributeMapping[$attributeName]); ?></span>
 <?php else: ?>
-                <?=$this->e($attributeName); ?>
+            <?=$this->e($attributeName); ?>
 <?php endif; ?>
-                </th>
-                <td>
-<?php if (1 === count($attributeValueList)): ?>
-                    <code><?=$this->e($attributeValueList[0]); ?></code>
-<?php else: ?>
-                    <ul>
+        </dt>
+        <dd>
+            <ul>
 <?php foreach ($attributeValueList as $attributeValue): ?>                    
-                        <li><code><?=$this->e($attributeValue); ?></code></li>
+                <li><code><?=$this->e($attributeValue); ?></code></li>
 <?php endforeach; ?>
-                    </ul>
-<?php endif; ?>
-                </td>
+            </ul>
+        </dd>
 <?php endforeach; ?>
-        </tbody>
-    </table>
-
-    <form id="submit" method="post" action="<?=$this->e($acsUrl); ?>">
+	</dl>
+	
+    <form method="post" action="<?=$this->e($acsUrl); ?>">
         <input type="hidden" name="SAMLResponse" value="<?=$this->e($samlResponse); ?>">
         <?php if (null !== $relayState): ?>
             <input type="hidden" name="RelayState" value="<?=$this->e($relayState); ?>">
         <?php endif; ?>
-        <button type="submit"><?=$this->t('Approve'); ?></button>
+        <input type="submit" value="<?=$this->t('Approve'); ?>">
     </form>
-    </div> <!-- /consent -->
-<?php $this->stop(); ?>
+<?php $this->stop('main'); ?>

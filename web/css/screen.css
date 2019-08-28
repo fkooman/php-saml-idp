@@ -1,69 +1,46 @@
-div.header {
-    width: 100%;
-    background-color: #000;
-    color: #fff;
-    padding: 1em;
-    text-align: center;
+body {
+	background-color: #eee;
 }
 
-div.auth {
-    max-width: 25em;
-    margin: 4em auto;
+header {
+	text-align: center;
+	width: 100%;
+	background-color: #fff;
+	padding: 1em;
+	border-bottom: 1px solid #ddd;
 }
 
-div.auth form {
-    width: 100%;
+main {
+	max-width: 45em;
+	margin: 2em auto;
 }
 
-div.auth form input {
-    width: 100%;
+footer {
+	text-align: center;
+	font-size: 85%;
+	margin: 1em;
 }
 
-div.auth form button, div.consent form button {
-    margin-top: 1em;
+form.auth {
+	max-width: 20em;
+	margin: 0 auto;
 }
 
-div.auth form label {
-    font-weight: bold;
-    display: block;
-    margin: 1em 0 0 0;
+form.auth input[type=text], form.auth input[type=password], form.auth input[type=submit] {
+	margin: 0.5em 0;
 }
 
-div.consent {
-    max-width: 50em;
-    margin: 4em auto;
+form.auth input[type=text], form.auth input[type=password] {
+	width: 100%;
 }
 
-div.consent table {
-    width: 100%;
-    border: 1px solid #ccc;
-    border-collapse: collapse;
+dl {
+	padding: 0.5em;
+	border: 1px solid #ddd;
+	background-color: #e8e8e8;
 }
 
-div.consent table thead tr {
-    background-color: #444;
-    color: #fff;
-    border-bottom: 1px solid #ccc;
-}
-
-div.consent table td, div.consent table th {
-    padding: 0.5em;
-}
-
-div.consent table th {
-    vertical-align: top;
-}
-
-div.consent table tbody tr:nth-child(even) {
-   background-color: #f4f4f4;
-}
-
-div.consent ul {
-    margin: 0;
-    padding: 0 1em;
-}
-
-div.footer {
-    text-align: center;
-    font-size: 85%;
+dl ul {
+	list-style: none;
+	margin: 0;
 }
