@@ -16,7 +16,6 @@
     <main>
         <?=$this->section('main'); ?>
     </main>
-
     <footer>
         Powered by <a href="https://git.tuxed.net/fkooman/php-saml-idp/about/">php-saml-idp</a>
 	</footer>

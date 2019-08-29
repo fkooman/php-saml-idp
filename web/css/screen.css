@@ -1,50 +1,48 @@
-body {
-	background-color: #eee;
-}
-
 header {
 	text-align: center;
 	width: 100%;
-	background-color: #fff;
+	background-color: #f8f8f8;
 	padding: 1em;
-	border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #ccc;
 }
 
 main {
 	max-width: 45em;
-	margin: 2em auto;
+	margin: 1em auto;
+    padding: 0.5em;
 }
 
-form.auth {
-	max-width: 20em;
-	margin: 5em auto 0 auto;
+div.auth {
+    max-width: 20em;
+    margin: 0 auto;
 }
 
-form.auth input[type=text], form.auth input[type=password], form.auth input[type=submit] {
+div.auth form input[type=text], div.auth form input[type=password], div.auth form input[type=submit], form.consent input[type=submit] {
 	margin: 0.5em 0;
 }
 
-form.auth input[type=text], form.auth input[type=password] {
+div.auth form input[type=text], div.auth form input[type=password] {
 	width: 100%;
+    padding: 0.6em;
+    border: 1px solid #ccc;
+    outline: none;
 }
 
-form.consent input[type=submit] {
-	margin: 1em 0;
+details {
+    margin: 0.5em 0;
 }
 
 dl {
 	padding: 1em;
 	border: 1px solid #ddd;
-	background-color: #fff;
 }
 
 dl ul {
 	list-style: none;
-	margin: 0;
 }
 
 footer {
 	text-align: center;
-	font-size: 85%;
-	margin: 3em 0 1em 0;
+	font-size: 75%;
+    margin-bottom: 1em;
 }

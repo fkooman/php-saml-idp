@@ -1,7 +1,7 @@
 <?php $this->layout('base'); ?>
 <?php $this->start('main'); ?>
     <p>
-        <?=$this->t('Personally identifying information will be sent to <strong title="%spEntityId%">%displayName%</strong> in order to authenticate.'); ?>
+        <?=$this->t('Personally identifying information will be sent to <strong title="%spEntityId%">%displayName%</strong> as part of the authentication.'); ?>
     </p>
 
 	<details>
