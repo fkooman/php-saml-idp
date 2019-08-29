@@ -23,7 +23,13 @@ div.auth form input[type=text], div.auth form input[type=password], div.auth for
 
 div.auth form input[type=text], div.auth form input[type=password] {
 	width: 100%;
-    padding: 0.6em;
+    padding: 0.5em;
+    border: 1px solid #ccc;
+    outline: none;
+}
+
+div.auth form input[type=submit], form.consent input[type=submit] {
+    padding: 0.4em 1em;
     border: 1px solid #ccc;
     outline: none;
 }
