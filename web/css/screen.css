@@ -25,14 +25,16 @@ div.auth form input[type=text], div.auth form input[type=password] {
 	width: 100%;
     padding: 0.5em;
     border: 1px solid #ccc;
-    outline: none;
 }
 
 div.auth form input[type=submit], form.consent input[type=submit] {
     padding: 0.4em 1em;
     border: 1px solid #ccc;
-    outline: none;
 	background-color: #f8f8f8;
+}
+
+div.auth form input[type=submit]:focus, form.consent input[type=submit]:focus {
+    outline: 1px solid #888;
 }
 
 details {
