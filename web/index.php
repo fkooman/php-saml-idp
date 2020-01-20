@@ -51,6 +51,7 @@ try {
     }
 
     $session = new Session(null, new Cookie(CookieOptions::init()->setSecure($secureCookie)->setSameSite('Lax')));
+//    $session->start();
     $service = new Service($config, $metadataConfig, new SeSession($session), $tpl, $samlKey, $samlCert);
     $service->run(new Request($_SERVER, $_GET, $_POST))->send();
 } catch (Exception $e) {

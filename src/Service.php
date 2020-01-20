@@ -83,6 +83,7 @@ class Service
                         case '/metadata':
                             return $this->getMetadata($request);
                         case '/sso':
+                            $this->session->start();
                             if (false === $this->isAuthenticated($request)) {
                                 return new HtmlResponse(
                                     $this->tpl->render('auth')
@@ -91,6 +92,7 @@ class Service
 
                             return $this->processSso($request);
                         case '/slo':
+                            $this->session->start();
                             if (false === $this->isAuthenticated($request)) {
                                 return new HtmlResponse(
                                     $this->tpl->render('auth')
@@ -105,6 +107,7 @@ class Service
                 case 'POST':
                     switch ($request->getPathInfo()) {
                         case '/sso':
+                            $this->session->start();
                             $this->handleAuth($request);
 
                             return $this->processSso($request);

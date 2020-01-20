@@ -39,6 +39,22 @@ class SeSession
     /**
      * @return void
      */
+    public function start()
+    {
+        $this->session->start();
+    }
+
+    /**
+     * @return void
+     */
+    public function regenerate()
+    {
+        $this->session->regenerate();
+    }
+
+    /**
+     * @return void
+     */
     public function destroy()
     {
         $this->session->destroy();
