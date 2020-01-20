@@ -79,7 +79,6 @@ class SAMLResponse
     }
 
     /**
-     * @param Config $spConfig
      * @param string $spEntityId
      * @param string $idpEntityId
      * @param string $id

@@ -31,7 +31,6 @@ use fkooman\SAML\IdP\Http\Exception\HttpException;
 use fkooman\SAML\IdP\Http\HtmlResponse;
 use fkooman\SAML\IdP\Http\Request;
 use fkooman\SAML\IdP\Http\Response;
-use fkooman\SeCookie\SessionInterface;
 use ParagonIE\ConstantTime\Base64;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use RuntimeException;
@@ -50,7 +49,7 @@ class Service
     /** @var Config */
     private $metadataConfig;
 
-    /** @var \fkooman\SeCookie\SessionInterface */
+    /** @var SeSession */
     private $session;
 
     /** @var Template */
@@ -59,10 +58,7 @@ class Service
     /** @var \DateTime */
     private $dateTime;
 
-    /**
-     * @param string $baseDir
-     */
-    public function __construct(Config $config, Config $metadataConfig, SessionInterface $session, Template $tpl, Key $samlKey, Certificate $samlCert)
+    public function __construct(Config $config, Config $metadataConfig, SeSession $session, Template $tpl, Key $samlKey, Certificate $samlCert)
     {
         $this->config = $config;
         $this->metadataConfig = $metadataConfig;
@@ -105,8 +101,7 @@ class Service
                         default:
                             throw new HttpException('page not found', 404);
                     }
-
-                    break;
+                    // no break
                 case 'POST':
                     switch ($request->getPathInfo()) {
                         case '/sso':
@@ -116,8 +111,7 @@ class Service
                         default:
                             throw new HttpException('page not found', 404);
                     }
-
-                    break;
+                    // no break
                 default:
                     $e = new HttpException('invalid method', 405);
                     $e->setHeaders(['Allow' => 'HEAD,GET,POST']);
@@ -172,7 +166,7 @@ class Service
      */
     private function isAuthenticated(Request $request)
     {
-        return $this->session->has('userInfo');
+        return null !== $this->session->get('userInfo');
     }
 
     /**
@@ -185,7 +179,7 @@ class Service
         // set session crap
         // XXX failing auth throws exception?
         $this->session->set('userInfo', $userAuthMethod->authenticate($request->getPostParameter('authUser'), $request->getPostParameter('authPass')));
-        $this->session->regenerate(true);
+        $this->session->regenerate();
     }
 
     /**
@@ -193,7 +187,7 @@ class Service
      */
     private function processSso(Request $request)
     {
-        $userAttributeList = [];
+//        $userAttributeList = [];
         $idpEntityId = $request->getRootUri().'metadata';
 
         // XXX input validation of everything
@@ -405,7 +399,7 @@ class Service
 
         // 3. see if we the transient ID provided is also set in the user's session for
         //    this SP
-        if (false === $this->session->has($spEntityId)) {
+        if (null === $spSession = $this->session->get($spEntityId)) {
             throw new RuntimeException('no session for this SP');
         }
 //        $logoutRequestTransientNameId = $dom->getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'NameID')->item(0)->nodeValue;
@@ -414,7 +408,7 @@ class Service
         $nameIdValue = $nameIdElement->textContent;
 
         // XXX make sure the attributes are correct, i.e. SPNameQualifier, Format
-        $transientNameId = $this->session->get($spEntityId)['transientNameId'];
+        $transientNameId = $spSession['transientNameId'];
         if (false === hash_equals($transientNameId, $nameIdValue)) {
             throw new RuntimeException('provided transient NameID does not match expected value');
         }

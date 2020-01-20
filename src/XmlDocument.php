@@ -38,9 +38,6 @@ class XmlDocument
     /** @var \DOMXPath */
     public $domXPath;
 
-    /**
-     * @param \DOMDocument $domDocument
-     */
     private function __construct(DOMDocument $domDocument)
     {
         $this->domDocument = $domDocument;
@@ -90,7 +87,7 @@ class XmlDocument
     /**
      * @param mixed $inputVar
      *
-     * @throws \fkooman\SAML\SP\Exception\XmlDocumentException
+     * @throws \fkooman\SAML\IdP\Exception\XmlDocumentException
      *
      * @return \DOMElement
      */
@@ -106,7 +103,7 @@ class XmlDocument
     /**
      * @param mixed $inputVar
      *
-     * @throws \fkooman\SAML\SP\Exception\XmlDocumentException
+     * @throws \fkooman\SAML\IdP\Exception\XmlDocumentException
      *
      * @return \DOMNodeList
      */
@@ -123,7 +120,7 @@ class XmlDocument
      * @param string        $xmlStr
      * @param array<string> $schemaFiles
      *
-     * @throws \fkooman\SAML\SP\Exception\XmlDocumentException
+     * @throws \fkooman\SAML\IdP\Exception\XmlDocumentException
      *
      * @return self
      */

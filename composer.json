@@ -5,6 +5,12 @@
             "name": "Fran\u00e7ois Kooman"
         }
     ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://git.tuxed.net/fkooman/php-secookie"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "fkooman\\SAML\\IdP\\": "src/"
@@ -19,7 +25,7 @@
         "ext-openssl": "*",
         "ext-spl": "*",
         "ext-zlib": "*",
-        "fkooman/secookie": "^2",
+        "fkooman/secookie": "dev-master",
         "ircmaxell/password-compat": "^1.0",
         "paragonie/constant_time_encoding": "^1|^2",
         "paragonie/random_compat": ">=1",

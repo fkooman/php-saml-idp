@@ -37,11 +37,6 @@ class Request
     /** @var array */
     private $postData;
 
-    /**
-     * @param array $serverData
-     * @param array $getData
-     * @param array $postData
-     */
     public function __construct(array $serverData, array $getData, array $postData)
     {
         $this->serverData = $serverData;

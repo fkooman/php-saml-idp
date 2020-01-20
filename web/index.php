@@ -31,8 +31,10 @@ use fkooman\SAML\IdP\Http\Request;
 use fkooman\SAML\IdP\Http\Response;
 use fkooman\SAML\IdP\Key;
 use fkooman\SAML\IdP\Service;
+use fkooman\SAML\IdP\SeSession;
 use fkooman\SAML\IdP\Template;
 use fkooman\SeCookie\Cookie;
+use fkooman\SeCookie\CookieOptions;
 use fkooman\SeCookie\Session;
 
 try {
@@ -48,16 +50,8 @@ try {
         $secureCookie = $config->get('secureCookie');
     }
 
-    $session = new Session(
-        [],
-        new Cookie(
-            [
-                'SameSite' => 'Lax',
-                'Secure' => $secureCookie,
-            ]
-        )
-    );
-    $service = new Service($config, $metadataConfig, $session, $tpl, $samlKey, $samlCert);
+    $session = new Session(null, new Cookie(CookieOptions::init()->setSecure($secureCookie)->setSameSite('Lax')));
+    $service = new Service($config, $metadataConfig, new SeSession($session), $tpl, $samlKey, $samlCert);
     $service->run(new Request($_SERVER, $_GET, $_POST))->send();
 } catch (Exception $e) {
     $response = new Response(
