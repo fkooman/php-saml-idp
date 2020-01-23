@@ -12,7 +12,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.tuxed.net/fkooman/php-secookie",
-                "reference": "50dafc5f2a6e61759d1bc856a76e3a17baff8ec8"
+                "reference": "112b7fc78821f5c97483307004bdbb6d150265aa"
             },
             "require": {
                 "ext-date": "*",
@@ -48,7 +48,7 @@
                 "email": "fkooman@tuxed.net",
                 "source": "https://git.tuxed.net/fkooman/php-secookie"
             },
-            "time": "2020-01-20T19:32:58+00:00"
+            "time": "2020-01-23T13:02:52+00:00"
         },
         {
             "name": "ircmaxell/password-compat",
