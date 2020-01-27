@@ -4,15 +4,15 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "254c70f57c190d12fb3b7860dd8d21f0",
+    "content-hash": "7d7e14673bee23b332e06420c16e04f8",
     "packages": [
         {
             "name": "fkooman/secookie",
-            "version": "dev-master",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://git.tuxed.net/fkooman/php-secookie",
-                "reference": "112b7fc78821f5c97483307004bdbb6d150265aa"
+                "reference": "1ba90e063dae78e9e6f8303749c73e183b79d90c"
             },
             "require": {
                 "ext-date": "*",
@@ -48,7 +48,7 @@
                 "email": "fkooman@tuxed.net",
                 "source": "https://git.tuxed.net/fkooman/php-secookie"
             },
-            "time": "2020-01-23T13:02:52+00:00"
+            "time": "2020-01-27T10:06:53+00:00"
         },
         {
             "name": "ircmaxell/password-compat",
@@ -311,9 +311,7 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "fkooman/secookie": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

@@ -13,7 +13,7 @@ spectool -g -R ${PROJECT_NAME}.spec
 cp ${PROJECT_NAME}*.conf ${PROJECT_NAME}*.cron ${PROJECT_NAME}*.patch $HOME/rpmbuild/SOURCES
 
 # create the SRPM
-SRPM_FILE_PATH=$(rpmbuild -bs ${PROJECT_NAME}.spec | cut -d ':' -f 2)
+SRPM_FILE_PATH=$(rpmbuild -bs ${PROJECT_NAME}.spec | grep 'Wrote:' | cut -d ':' -f 2)
 SRPM_FILE=$(basename $SRPM_FILE_PATH)
 
 # upload the SPEC/SRPM to fedorapeople.org

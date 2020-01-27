@@ -1,8 +1,8 @@
-%global git 6be0f91bc6c7d30f183c14aa8998c523a670a631
+%global git 7bc7adfc4fbd98689cc0e65d1e7d9e45aaff19c5
 
 Name:       php-saml-idp
 Version:    0.0.0
-Release:    0.90%{?dist}
+Release:    0.92%{?dist}
 Summary:    SAML IdP
 
 Group:      Applications/Internet
@@ -32,7 +32,7 @@ BuildRequires:  %{_bindir}/phpab
 #        "ext-openssl": "*",
 #        "ext-spl": "*",
 #        "ext-zlib": "*",
-#        "fkooman/secookie": "^2",
+#        "fkooman/secookie": "dev-master",
 #        "ircmaxell/password-compat": "^1.0",
 #        "paragonie/constant_time_encoding": "^1|^2",
 #        "paragonie/random_compat": ">=1",
@@ -47,7 +47,8 @@ BuildRequires:  php-libxml
 BuildRequires:  php-openssl
 BuildRequires:  php-spl
 BuildRequires:  php-zlib
-BuildRequires:  php-composer(fkooman/secookie)
+BuildRequires:  php-composer(fkooman/secookie) >= 3
+BuildRequires:  php-composer(fkooman/secookie) < 4
 BuildRequires:  php-composer(paragonie/constant_time_encoding)
 %if 0%{?fedora} < 28 && 0%{?rhel} < 8
 BuildRequires:  php-composer(paragonie/random_compat)
@@ -69,7 +70,7 @@ Requires:   httpd
 #        "ext-openssl": "*",
 #        "ext-spl": "*",
 #        "ext-zlib": "*",
-#        "fkooman/secookie": "^2",
+#        "fkooman/secookie": "dev-master",
 #        "ircmaxell/password-compat": "^1.0",
 #        "paragonie/constant_time_encoding": "^1|^2",
 #        "paragonie/random_compat": ">=1",
@@ -85,7 +86,8 @@ Requires:   php-libxml
 Requires:   php-openssl
 Requires:   php-spl
 Requires:   php-zlib
-Requires:   php-composer(fkooman/secookie)
+Requires:   php-composer(fkooman/secookie) >= 3
+Requires:   php-composer(fkooman/secookie) < 4
 Requires:   php-composer(paragonie/constant_time_encoding)
 %if 0%{?fedora} < 28 && 0%{?rhel} < 8
 Requires:   php-composer(paragonie/random_compat)
@@ -151,6 +153,12 @@ install -m 0644 -D -p %{SOURCE3} %{buildroot}%{_sysconfdir}/httpd/conf.d/%{name}
 %license LICENSE
 
 %changelog
+* Thu Jan 23 2020 François Kooman <fkooman@tuxed.net> - 0.0.0-0.92
+- rebuilt
+
+* Tue Jan 21 2020 François Kooman <fkooman@tuxed.net> - 0.0.0-0.91
+- rebuilt
+
 * Wed Sep 11 2019 François Kooman <fkooman@tuxed.net> - 0.0.0-0.90
 - rebuilt
 
