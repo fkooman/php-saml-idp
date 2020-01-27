@@ -1,8 +1,8 @@
-%global git 7bc7adfc4fbd98689cc0e65d1e7d9e45aaff19c5
+%global git 8896557d252eb89d42b92d6b53abf05792eaa005
 
 Name:       php-saml-idp
 Version:    0.0.0
-Release:    0.92%{?dist}
+Release:    0.93%{?dist}
 Summary:    SAML IdP
 
 Group:      Applications/Internet
@@ -32,7 +32,7 @@ BuildRequires:  %{_bindir}/phpab
 #        "ext-openssl": "*",
 #        "ext-spl": "*",
 #        "ext-zlib": "*",
-#        "fkooman/secookie": "dev-master",
+#        "fkooman/secookie": "^3",
 #        "ircmaxell/password-compat": "^1.0",
 #        "paragonie/constant_time_encoding": "^1|^2",
 #        "paragonie/random_compat": ">=1",
@@ -70,7 +70,7 @@ Requires:   httpd
 #        "ext-openssl": "*",
 #        "ext-spl": "*",
 #        "ext-zlib": "*",
-#        "fkooman/secookie": "dev-master",
+#        "fkooman/secookie": "^3",
 #        "ircmaxell/password-compat": "^1.0",
 #        "paragonie/constant_time_encoding": "^1|^2",
 #        "paragonie/random_compat": ">=1",
@@ -153,6 +153,9 @@ install -m 0644 -D -p %{SOURCE3} %{buildroot}%{_sysconfdir}/httpd/conf.d/%{name}
 %license LICENSE
 
 %changelog
+* Mon Jan 27 2020 François Kooman <fkooman@tuxed.net> - 0.0.0-0.93
+- rebuilt
+
 * Thu Jan 23 2020 François Kooman <fkooman@tuxed.net> - 0.0.0-0.92
 - rebuilt
 
