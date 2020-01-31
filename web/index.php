@@ -49,7 +49,11 @@ try {
         $secureCookie = $config->get('secureCookie');
     }
 
-    $session = new Session(null, CookieOptions::init()->setSecure($secureCookie)->setSameSite('Lax'));
+    $cookieOptions = CookieOptions::init()->withSameSiteLax();
+    $session = new Session(
+        null,
+        $secureCookie ? $cookieOptions : $cookieOptions->withoutSecure()
+    );
     $service = new Service($config, $metadataConfig, new SeSession($session), $tpl, $samlKey, $samlCert);
     $service->run(new Request($_SERVER, $_GET, $_POST))->send();
 } catch (Exception $e) {

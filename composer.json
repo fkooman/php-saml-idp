@@ -25,7 +25,7 @@
         "ext-openssl": "*",
         "ext-spl": "*",
         "ext-zlib": "*",
-        "fkooman/secookie": "^3",
+        "fkooman/secookie": "dev-master",
         "ircmaxell/password-compat": "^1.0",
         "paragonie/constant_time_encoding": "^1|^2",
         "paragonie/random_compat": ">=1",
