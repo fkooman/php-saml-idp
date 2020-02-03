@@ -2,7 +2,7 @@
 
 Name:       php-saml-idp
 Version:    0.0.0
-Release:    0.94%{?dist}
+Release:    0.95%{?dist}
 Summary:    SAML IdP
 
 Group:      Applications/Internet
@@ -47,8 +47,8 @@ BuildRequires:  php-libxml
 BuildRequires:  php-openssl
 BuildRequires:  php-spl
 BuildRequires:  php-zlib
-BuildRequires:  php-composer(fkooman/secookie) >= 3
-BuildRequires:  php-composer(fkooman/secookie) < 4
+BuildRequires:  php-composer(fkooman/secookie) >= 4
+BuildRequires:  php-composer(fkooman/secookie) < 5
 BuildRequires:  php-composer(paragonie/constant_time_encoding)
 %if 0%{?fedora} < 28 && 0%{?rhel} < 8
 BuildRequires:  php-composer(paragonie/random_compat)
@@ -86,8 +86,8 @@ Requires:   php-libxml
 Requires:   php-openssl
 Requires:   php-spl
 Requires:   php-zlib
-Requires:   php-composer(fkooman/secookie) >= 3
-Requires:   php-composer(fkooman/secookie) < 4
+Requires:   php-composer(fkooman/secookie) >= 4
+Requires:   php-composer(fkooman/secookie) < 5
 Requires:   php-composer(paragonie/constant_time_encoding)
 %if 0%{?fedora} < 28 && 0%{?rhel} < 8
 Requires:   php-composer(paragonie/random_compat)
@@ -153,6 +153,9 @@ install -m 0644 -D -p %{SOURCE3} %{buildroot}%{_sysconfdir}/httpd/conf.d/%{name}
 %license LICENSE
 
 %changelog
+* Fri Jan 31 2020 François Kooman <fkooman@tuxed.net> - 0.0.0-0.95
+- rebuilt
+
 * Fri Jan 31 2020 François Kooman <fkooman@tuxed.net> - 0.0.0-0.94
 - rebuilt
 
