@@ -1,8 +1,8 @@
-%global git a501d306c16e5716f993238560af1acfd9a00f3a
+%global git ca1acc706d96577437a773dd16969ddf15c31fa2
 
 Name:       php-saml-idp
 Version:    0.0.0
-Release:    0.98%{?dist}
+Release:    0.99%{?dist}
 Summary:    SAML IdP
 
 Group:      Applications/Internet
@@ -31,6 +31,7 @@ BuildRequires:  %{_bindir}/phpab
 #        "ext-libxml": "*",
 #        "ext-openssl": "*",
 #        "ext-spl": "*",
+#        "fkooman/otp-verifier": "^0.3",
 #        "ext-zlib": "*",
 #        "fkooman/secookie": "^4",
 #        "ircmaxell/password-compat": "^1.0",
@@ -46,6 +47,8 @@ BuildRequires:  php-hash
 BuildRequires:  php-libxml
 BuildRequires:  php-openssl
 BuildRequires:  php-spl
+BuildRequires:  php-composer(fkooman/otp-verifier) >= 0.3
+BuildRequires:  php-composer(fkooman/otp-verifier) < 0.4
 BuildRequires:  php-zlib
 BuildRequires:  php-composer(fkooman/secookie) >= 4
 BuildRequires:  php-composer(fkooman/secookie) < 5
@@ -69,6 +72,7 @@ Requires:   httpd
 #        "ext-libxml": "*",
 #        "ext-openssl": "*",
 #        "ext-spl": "*",
+#        "fkooman/otp-verifier": "^0.3",
 #        "ext-zlib": "*",
 #        "fkooman/secookie": "^4",
 #        "ircmaxell/password-compat": "^1.0",
@@ -85,6 +89,8 @@ Requires:   php-hash
 Requires:   php-libxml
 Requires:   php-openssl
 Requires:   php-spl
+Requires:   php-composer(fkooman/otp-verifier) >= 0.3
+Requires:   php-composer(fkooman/otp-verifier) < 0.4
 Requires:   php-zlib
 Requires:   php-composer(fkooman/secookie) >= 4
 Requires:   php-composer(fkooman/secookie) < 5
@@ -112,6 +118,7 @@ gpgv2 --keyring %{SOURCE2} %{SOURCE1} %{SOURCE0}
 cat <<'AUTOLOAD' | tee -a src/autoload.php
 require_once '%{_datadir}/php/fkooman/SeCookie/autoload.php';
 require_once '%{_datadir}/php/ParagonIE/ConstantTime/autoload.php';
+require_once '%{_datadir}/php/fkooman/Otp/autoload.php';
 AUTOLOAD
 %if 0%{?fedora} < 28 && 0%{?rhel} < 8
 cat <<'AUTOLOAD' | tee -a src/autoload.php
@@ -153,6 +160,9 @@ install -m 0644 -D -p %{SOURCE3} %{buildroot}%{_sysconfdir}/httpd/conf.d/%{name}
 %license LICENSE
 
 %changelog
+* Wed Feb 12 2020 François Kooman <fkooman@tuxed.net> - 0.0.0-0.99
+- rebuilt
+
 * Wed Feb 12 2020 François Kooman <fkooman@tuxed.net> - 0.0.0-0.98
 - rebuilt
 
