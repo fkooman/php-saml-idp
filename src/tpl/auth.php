@@ -11,9 +11,13 @@
                 <summary>Advanced</summary>
                 <label for="authnContextClassRef">AuthnContextClassRef</label>
                 <select name="authnContextClassRef" id="authnContextClassRef">
-                    <option value="urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport">urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</option>
-                    <option value="urn:oasis:names:tc:SAML:2.0:ac:classes:TimesyncToken">urn:oasis:names:tc:SAML:2.0:ac:classes:TimesyncToken</option>
-                    <option value="urn:oasis:names:tc:SAML:2.0:ac:classes:X509">urn:oasis:names:tc:SAML:2.0:ac:classes:X509</option>
+<?php foreach ($supportedAuthnContextClassRefList as $supportedAuthnContextClassRef): ?>
+<?php if ($supportedAuthnContextClassRef === $requestedAuthnContextClassRef): ?>
+    <option selected="selected" value="<?=$this->e($supportedAuthnContextClassRef); ?>">(REQ) <?=$this->e($supportedAuthnContextClassRef); ?></option>
+<?php else: ?>
+    <option value="<?=$this->e($supportedAuthnContextClassRef); ?>"><?=$this->e($supportedAuthnContextClassRef); ?></option>
+<?php endif; ?>
+<?php endforeach; ?>
                 </select>
             </details>
             <input type="submit" value="<?=$this->t('Sign In'); ?>">

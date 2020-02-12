@@ -58,6 +58,9 @@ class Service
     /** @var \DateTime */
     private $dateTime;
 
+    /** @var array<string> */
+    private $supportedAuthnContextClassRefList;
+
     public function __construct(Config $config, Config $metadataConfig, SeSession $session, Template $tpl, Key $samlKey, Certificate $samlCert)
     {
         $this->config = $config;
@@ -68,6 +71,12 @@ class Service
         $this->samlCert = $samlCert;
         $this->dateTime = new DateTime();
         $this->dateTime->setTimeZone(new DateTimeZone('UTC'));
+
+        $this->supportedAuthnContextClassRefList = [
+            'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport',
+            'urn:oasis:names:tc:SAML:2.0:ac:classes:TimesyncToken',
+            'urn:oasis:names:tc:SAML:2.0:ac:classes:X509',
+        ];
     }
 
     /**
@@ -84,16 +93,11 @@ class Service
                             return $this->getMetadata($request);
                         case '/sso':
                             $this->session->start();
-                            if (false === $this->isAuthenticated($request)) {
-                                return new HtmlResponse(
-                                    $this->tpl->render('auth')
-                                );
-                            }
 
                             return $this->processSso($request);
                         case '/slo':
                             $this->session->start();
-                            if (false === $this->isAuthenticated($request)) {
+                            if (null === $this->isAuthenticated()) {
                                 return new HtmlResponse(
                                     $this->tpl->render('auth')
                                 );
@@ -165,11 +169,20 @@ class Service
     }
 
     /**
-     * @return bool
+     * @return null|UserInfo
      */
-    private function isAuthenticated(Request $request)
+    private function isAuthenticated()
     {
-        return null !== $this->session->get('userInfo');
+        if (null === $serializedUserInfo = $this->session->get('userInfo')) {
+            return null;
+        }
+
+        $userInfo = unserialize($serializedUserInfo);
+        if (!($userInfo instanceof UserInfo)) {
+            return null;
+        }
+
+        return $userInfo;
     }
 
     /**
@@ -181,7 +194,7 @@ class Service
 
         // allow the user to choose the authnContextClassRef
         $authnContextClassRef = $request->getPostParameter('authnContextClassRef');
-        if (!\in_array($authnContextClassRef, ['urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport', 'urn:oasis:names:tc:SAML:2.0:ac:classes:TimesyncToken', 'urn:oasis:names:tc:SAML:2.0:ac:classes:X509'], true)) {
+        if (!\in_array($authnContextClassRef, $this->supportedAuthnContextClassRefList, true)) {
             throw new HttpException('invalid AuthnContextClassRef', 400);
         }
 
@@ -189,7 +202,7 @@ class Service
 
         // set session crap
         // XXX failing auth throws exception?
-        $this->session->set('userInfo', $userAuthMethod->authenticate($request->getPostParameter('authUser'), $request->getPostParameter('authPass')));
+        $this->session->set('userInfo', serialize($userAuthMethod->authenticate($request->getPostParameter('authUser'), $request->getPostParameter('authPass'))));
         $this->session->regenerate();
     }
 
@@ -217,8 +230,6 @@ class Service
 
         $authnRequestId = $authnRequestElement->getAttribute('ID');
         // XXX make sure it is a string
-
-        $userInfo = $this->session->get('userInfo');
 
 //        $foo = $requestDocument->domXPath->query('/samlp:AuthnRequest/saml:Issuer');
 //        var_dump($foo->item(0));
@@ -272,32 +283,47 @@ class Service
             }
         }
 
-        $secretSalt = $this->config->get('secretSalt');
-        if ('__REPLACE_ME__' === $secretSalt) {
-            throw new RuntimeException('"secretSalt" not configured');
+        // determine which AuthnContextClassRef we require
+        //    <samlp:RequestedAuthnContext Comparison="exact">
+        //        <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:TimesyncToken</saml:AuthnContextClassRef>
+        //    </samlp:RequestedAuthnContext>
+
+        $requestedAuthnContextClassRef = null;
+        $domNodeList = $requestDocument->domXPath->query('/samlp:AuthnRequest/samlp:RequestedAuthnContext/saml:AuthnContextClassRef');
+        if (1 === $domNodeList->length) {
+            // no AuthnContextClassRef
+            $authnContextClassRefElement = XmlDocument::requireDomElement($domNodeList->item(0));
+            $requestedAuthnContextClassRef = $authnContextClassRefElement->textContent;
         }
 
-        $identifierSourceAttribute = $this->config->get('identifierSourceAttribute');
-        $persistentId = Base64UrlSafe::encodeUnpadded(
-            hash(
-                'sha256',
-                sprintf('%s|%s|%s|%s', $secretSalt, $identifierSourceAttribute, $idpEntityId, $spEntityId),
-                true
-            )
-        );
+        if (null === $userInfo = $this->isAuthenticated()) {
+            return new HtmlResponse(
+                $this->tpl->render('auth', ['supportedAuthnContextClassRefList' => $this->supportedAuthnContextClassRefList, 'requestedAuthnContextClassRef' => $requestedAuthnContextClassRef])
+            );
+        }
 
-        $samlResponse->setAttribute('eduPersonTargetedID', [$persistentId]);
-        $samlResponse->setAttribute(
-            'pairwise-id',
-            [
-                sprintf('%s@%s', $persistentId, $this->config->get('identifierScope')),
-            ]
-        );
+        // XXX check whether we have the correct AuthnContextClassRef
+        $authnContextClassRef = $this->session->get('authnContextClassRef');
+        // check what IdP requested... it MUST match
+        if (null !== $requestedAuthnContextClassRef) {
+            if ($requestedAuthnContextClassRef !== $authnContextClassRef) {
+                return new HtmlResponse(
+                    $this->tpl->render('auth', ['supportedAuthnContextClassRefList' => $this->supportedAuthnContextClassRefList, 'requestedAuthnContextClassRef' => $requestedAuthnContextClassRef])
+                );
+            }
+        }
+
         foreach ($userInfo->getAttributes() as $k => $v) {
             $samlResponse->setAttribute($k, $v);
         }
 
         $identifierSourceAttributeValue = $userInfo->getAttribute($this->config->get('identifierSourceAttribute'))[0];
+
+        $secretSalt = $this->config->get('secretSalt');
+        if ('__REPLACE_ME__' === $secretSalt) {
+            throw new RuntimeException('"secretSalt" not configured');
+        }
+
         $persistentId = Base64UrlSafe::encodeUnpadded(
             hash(
                 'sha256',
