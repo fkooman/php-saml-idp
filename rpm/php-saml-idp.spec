@@ -132,6 +132,8 @@ AUTOLOAD
 mkdir -p %{buildroot}%{_datadir}/%{name}
 mkdir -p %{buildroot}%{_datadir}/php/fkooman/SAML/IdP
 install -m 0755 -D -p bin/generate-salt.php %{buildroot}%{_bindir}/php-saml-idp-generate-salt
+install -m 0755 -D -p bin/add-otp.php %{buildroot}%{_bindir}/php-saml-idp-add-otp
+install -m 0755 -D -p bin/init.php %{buildroot}%{_bindir}/php-saml-idp-init
 install -m 0755 -D -p bin/add-user.php %{buildroot}%{_bindir}/php-saml-idp-add-user
 cp -pr src/* %{buildroot}%{_datadir}/php/fkooman/SAML/IdP
 cp -pr locale web %{buildroot}%{_datadir}/%{name}
@@ -141,7 +143,19 @@ cp -pr config/config.php.example %{buildroot}%{_sysconfdir}/%{name}/config.php
 cp -pr config/metadata.php.example %{buildroot}%{_sysconfdir}/%{name}/metadata.php
 ln -s ../../../etc/%{name} %{buildroot}%{_datadir}/%{name}/config
 
+mkdir -p %{buildroot}%{_localstatedir}/lib/php-saml-idp
+ln -s ../../../var/lib/php-saml-idp %{buildroot}%{_datadir}/php-saml-idp/data
+
 install -m 0644 -D -p %{SOURCE3} %{buildroot}%{_sysconfdir}/httpd/conf.d/%{name}.conf
+
+%post
+semanage fcontext -a -t httpd_sys_rw_content_t '%{_localstatedir}/lib/php-saml-idp(/.*)?' 2>/dev/null || :
+restorecon -R %{_localstatedir}/lib/php-saml-idp || :
+
+%postun
+if [ $1 -eq 0 ] ; then  # final removal
+semanage fcontext -d -t httpd_sys_rw_content_t '%{_localstatedir}/lib/php-saml-idp(/.*)?' 2>/dev/null || :
+fi
 
 %files
 %defattr(-,root,root,-)
@@ -153,9 +167,8 @@ install -m 0644 -D -p %{SOURCE3} %{buildroot}%{_sysconfdir}/httpd/conf.d/%{name}
 %dir %{_datadir}/php/fkooman
 %dir %{_datadir}/php/fkooman/SAML
 %{_datadir}/php/fkooman/SAML/IdP
-%{_datadir}/%{name}/web
-%{_datadir}/%{name}/locale
-%{_datadir}/%{name}/config
+%{_datadir}/%{name}
+%dir %attr(0700,apache,apache) %{_localstatedir}/lib/php-saml-idp
 %doc README.md CHANGES.md composer.json config/config.php.example config/metadata.php.example
 %license LICENSE
 
