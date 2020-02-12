@@ -27,6 +27,8 @@ namespace fkooman\SAML\IdP;
 use DateInterval;
 use DateTime;
 use DateTimeZone;
+use fkooman\Otp\Exception\OtpException;
+use fkooman\Otp\Totp;
 use fkooman\SAML\IdP\Http\Exception\HttpException;
 use fkooman\SAML\IdP\Http\HtmlResponse;
 use fkooman\SAML\IdP\Http\Request;
@@ -43,6 +45,9 @@ class Service
     /** @var Certificate */
     private $samlCert;
 
+    /** @var \fkooman\Otp\Totp */
+    private $totp;
+
     /** @var Config */
     private $config;
 
@@ -58,12 +63,10 @@ class Service
     /** @var \DateTime */
     private $dateTime;
 
-    /** @var array<string> */
-    private $supportedAuthnContextClassRefList;
-
-    public function __construct(Config $config, Config $metadataConfig, SeSession $session, Template $tpl, Key $samlKey, Certificate $samlCert)
+    public function __construct(Config $config, Totp $totp, Config $metadataConfig, SeSession $session, Template $tpl, Key $samlKey, Certificate $samlCert)
     {
         $this->config = $config;
+        $this->totp = $totp;
         $this->metadataConfig = $metadataConfig;
         $this->session = $session;
         $this->tpl = $tpl;
@@ -71,12 +74,6 @@ class Service
         $this->samlCert = $samlCert;
         $this->dateTime = new DateTime();
         $this->dateTime->setTimeZone(new DateTimeZone('UTC'));
-
-        $this->supportedAuthnContextClassRefList = [
-            'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport',
-            'urn:oasis:names:tc:SAML:2.0:ac:classes:TimesyncToken',
-            'urn:oasis:names:tc:SAML:2.0:ac:classes:X509',
-        ];
     }
 
     /**
@@ -191,19 +188,25 @@ class Service
     private function handleAuth(Request $request)
     {
         $userAuthMethod = new SimpleAuth($this->config->get('simpleAuth'));
+        $userId = $request->getPostParameter('authUser');
+        $userPass = $request->getPostParameter('authPass');
 
-        // allow the user to choose the authnContextClassRef
-        $authnContextClassRef = $request->getPostParameter('authnContextClassRef');
-        if (!\in_array($authnContextClassRef, $this->supportedAuthnContextClassRefList, true)) {
-            throw new HttpException('invalid AuthnContextClassRef', 400);
+        $this->session->regenerate();
+        $userInfo = $userAuthMethod->authenticate($userId, $userPass);
+        // verify TOTP and set AuthnContextClassRef accordingly
+        if ($request->hasPostParameter('otpKey')) {
+            $otpKey = $request->getPostParameter('otpKey');
+
+            try {
+                $this->totp->verify($userId, $otpKey);
+                $userInfo->setTwoFactorVerified();
+            } catch (OtpException $e) {
+                throw new HttpException('invalid OTP code', 400);
+            }
         }
 
-        $this->session->set('authnContextClassRef', $authnContextClassRef);
-
-        // set session crap
-        // XXX failing auth throws exception?
-        $this->session->set('userInfo', serialize($userAuthMethod->authenticate($request->getPostParameter('authUser'), $request->getPostParameter('authPass'))));
         $this->session->regenerate();
+        $this->session->set('userInfo', serialize($userInfo));
     }
 
     /**
@@ -288,29 +291,27 @@ class Service
         //        <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:TimesyncToken</saml:AuthnContextClassRef>
         //    </samlp:RequestedAuthnContext>
 
-        $requestedAuthnContextClassRef = null;
+        $requireTwoFactor = false;
         $domNodeList = $requestDocument->domXPath->query('/samlp:AuthnRequest/samlp:RequestedAuthnContext/saml:AuthnContextClassRef');
         if (1 === $domNodeList->length) {
-            // no AuthnContextClassRef
             $authnContextClassRefElement = XmlDocument::requireDomElement($domNodeList->item(0));
-            $requestedAuthnContextClassRef = $authnContextClassRefElement->textContent;
+            if ('urn:oasis:names:tc:SAML:2.0:ac:classes:TimesyncToken' === $authnContextClassRefElement->textContent) {
+                $requireTwoFactor = true;
+            }
         }
 
         if (null === $userInfo = $this->isAuthenticated()) {
             return new HtmlResponse(
-                $this->tpl->render('auth', ['supportedAuthnContextClassRefList' => $this->supportedAuthnContextClassRefList, 'requestedAuthnContextClassRef' => $requestedAuthnContextClassRef])
+                $this->tpl->render('auth', ['requireTwoFactor' => $requireTwoFactor])
             );
         }
 
-        // XXX check whether we have the correct AuthnContextClassRef
-        $authnContextClassRef = $this->session->get('authnContextClassRef');
-        // check what IdP requested... it MUST match
-        if (null !== $requestedAuthnContextClassRef) {
-            if ($requestedAuthnContextClassRef !== $authnContextClassRef) {
-                return new HtmlResponse(
-                    $this->tpl->render('auth', ['supportedAuthnContextClassRefList' => $this->supportedAuthnContextClassRefList, 'requestedAuthnContextClassRef' => $requestedAuthnContextClassRef])
-                );
-            }
+        // if 2FA is requested, but we don't have it, require it
+        if ($requireTwoFactor && !$userInfo->getTwoFactorVerified()) {
+            // 2FA required, but user not verified (yet)
+            return new HtmlResponse(
+                $this->tpl->render('auth', ['requireTwoFactor' => true])
+            );
         }
 
         foreach ($userInfo->getAttributes() as $k => $v) {
@@ -353,9 +354,7 @@ class Service
             }
         }
 
-        if (null === $authnContextClassRef = $this->session->get('authnContextClassRef')) {
-            $authnContextClassRef = 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport';
-        }
+        $authnContextClassRef = $userInfo->getTwoFactorVerified() ? 'urn:oasis:names:tc:SAML:2.0:ac:classes:TimesyncToken' : 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport';
         $responseXml = $samlResponse->getAssertion($spConfig, $spEntityId, $idpEntityId, $authnRequestId, $transientNameId, $authnContextClassRef);
 
         return new HtmlResponse(

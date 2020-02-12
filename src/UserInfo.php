@@ -34,6 +34,9 @@ class UserInfo
     /** @var array<string, array<string>> */
     private $attributeList;
 
+    /** @var bool */
+    private $twoFactorVerified = false;
+
     /**
      * @param string                       $authUser
      * @param array<string, array<string>> $attributeList
@@ -50,6 +53,22 @@ class UserInfo
     public function getAuthUser()
     {
         return $this->authUser;
+    }
+
+    /**
+     * @return void
+     */
+    public function setTwoFactorVerified()
+    {
+        $this->twoFactorVerified = true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getTwoFactorVerified()
+    {
+        return $this->twoFactorVerified;
     }
 
     /**

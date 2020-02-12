@@ -9,6 +9,10 @@
         {
             "type": "vcs",
             "url": "https://git.tuxed.net/fkooman/php-secookie"
+        },
+        {
+            "type": "vcs",
+            "url": "https://git.tuxed.net/fkooman/php-otp-verifier"
         }
     ],
     "autoload": {
@@ -24,6 +28,7 @@
         "ext-libxml": "*",
         "ext-openssl": "*",
         "ext-spl": "*",
+        "fkooman/otp-verifier": "^0.3",
         "ext-zlib": "*",
         "fkooman/secookie": "^4",
         "ircmaxell/password-compat": "^1.0",

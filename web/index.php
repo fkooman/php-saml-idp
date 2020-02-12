@@ -25,6 +25,8 @@
 require_once dirname(__DIR__).'/vendor/autoload.php';
 $baseDir = dirname(__DIR__);
 
+use fkooman\Otp\Storage;
+use fkooman\Otp\Totp;
 use fkooman\SAML\IdP\Certificate;
 use fkooman\SAML\IdP\Config;
 use fkooman\SAML\IdP\Http\Request;
@@ -54,7 +56,11 @@ try {
         null,
         $secureCookie ? $cookieOptions : $cookieOptions->withoutSecure()
     );
-    $service = new Service($config, $metadataConfig, new SeSession($session), $tpl, $samlKey, $samlCert);
+
+    $storage = new Storage(new PDO(sprintf('sqlite:%s/data/db.sqlite', $baseDir)));
+    $totp = new Totp($storage);
+
+    $service = new Service($config, $totp, $metadataConfig, new SeSession($session), $tpl, $samlKey, $samlCert);
     $service->run(new Request($_SERVER, $_GET, $_POST))->send();
 } catch (Exception $e) {
     $response = new Response(
