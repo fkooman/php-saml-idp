@@ -179,6 +179,14 @@ class Service
     {
         $userAuthMethod = new SimpleAuth($this->config->get('simpleAuth'));
 
+        // allow the user to choose the authnContextClassRef
+        $authnContextClassRef = $request->getPostParameter('authnContextClassRef');
+        if (!\in_array($authnContextClassRef, ['urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport', 'urn:oasis:names:tc:SAML:2.0:ac:classes:TimesyncToken', 'urn:oasis:names:tc:SAML:2.0:ac:classes:X509'], true)) {
+            throw new HttpException('invalid AuthnContextClassRef', 400);
+        }
+
+        $this->session->set('authnContextClassRef', $authnContextClassRef);
+
         // set session crap
         // XXX failing auth throws exception?
         $this->session->set('userInfo', $userAuthMethod->authenticate($request->getPostParameter('authUser'), $request->getPostParameter('authPass')));
@@ -319,7 +327,10 @@ class Service
             }
         }
 
-        $responseXml = $samlResponse->getAssertion($spConfig, $spEntityId, $idpEntityId, $authnRequestId, $transientNameId);
+        if (null === $authnContextClassRef = $this->session->get('authnContextClassRef')) {
+            $authnContextClassRef = 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport';
+        }
+        $responseXml = $samlResponse->getAssertion($spConfig, $spEntityId, $idpEntityId, $authnRequestId, $transientNameId, $authnContextClassRef);
 
         return new HtmlResponse(
             $this->tpl->render(

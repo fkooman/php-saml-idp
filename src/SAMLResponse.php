@@ -83,10 +83,11 @@ class SAMLResponse
      * @param string $idpEntityId
      * @param string $id
      * @param string $transientNameId
+     * @param string $authnContextClassRef
      *
      * @return string
      */
-    public function getAssertion(Config $spConfig, $spEntityId, $idpEntityId, $id, $transientNameId)
+    public function getAssertion(Config $spConfig, $spEntityId, $idpEntityId, $id, $transientNameId, $authnContextClassRef)
     {
         $responseId = '_'.bin2hex(random_bytes(32));
         $assertionId = '_'.bin2hex(random_bytes(32));
@@ -115,6 +116,7 @@ class SAMLResponse
                 'noOnOrAfter' => $notOnOrAfter,
                 'assertionAudience' => $assertionAudience,
                 'x509Certificate' => $x509Certificate,
+                'authnContextClassRef' => $authnContextClassRef,
                 'attributeList' => $this->prepareAttributes(
                     $spConfig->has('attributeRelease') ? $spConfig->get('attributeRelease')->toArray() : [],
                     $spConfig->has('attributeMapping') ? $spConfig->get('attributeMapping')->toArray() : []

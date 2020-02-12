@@ -21,6 +21,10 @@ div.auth form input[type=text], div.auth form input[type=password], div.auth for
 	margin: 0.5em 0;
 }
 
+div.auth form label {
+    font-weight: bold;
+}
+
 div.auth form input[type=text], div.auth form input[type=password] {
 	width: 100%;
     padding: 0.5em;
@@ -37,7 +41,7 @@ div.auth form input[type=submit]:focus, form.consent input[type=submit]:focus {
     outline: 1px solid #888;
 }
 
-details {
+details, summary {
     margin: 0.5em 0;
 }
 
