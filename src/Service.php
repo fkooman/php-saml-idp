@@ -112,6 +112,15 @@ class Service
                             $this->handleAuth($request);
 
                             return $this->processSso($request);
+                        case '/two_factor':
+                            $this->session->start();
+                            $this->handleTwoFactor($request);
+
+                            return new Response(
+                                '',
+                                ['Location' => $request->getHeader('HTTP_REFERER')],
+                                302
+                            );
                         default:
                             throw new HttpException('page not found', 404);
                     }
@@ -210,6 +219,34 @@ class Service
     }
 
     /**
+     * @return void
+     */
+    private function handleTwoFactor(Request $request)
+    {
+        if (null === $userInfo = $this->isAuthenticated()) {
+            throw new HttpException('not authenticated', 401);
+        }
+
+        // verify TOTP and set AuthnContextClassRef accordingly
+        if ($request->hasPostParameter('otpKey')) {
+            $otpKey = $request->getPostParameter('otpKey');
+
+            try {
+                $this->totp->verify($userInfo->getAuthUser(), $otpKey);
+                $userInfo->setTwoFactorVerified();
+            } catch (OtpException $e) {
+                throw new HttpException('invalid OTP code', 400);
+            }
+        }
+
+        // XXX maybe we can have twice regenerate in 1 script execution, that
+        // sounds bad! only do this if the user was already logged in
+        // previously?
+//        $this->session->regenerate();
+        $this->session->set('userInfo', serialize($userInfo));
+    }
+
+    /**
      * @return \fkooman\SAML\IdP\Http\Response
      */
     private function processSso(Request $request)
@@ -302,7 +339,7 @@ class Service
 
         if (null === $userInfo = $this->isAuthenticated()) {
             return new HtmlResponse(
-                $this->tpl->render('auth', ['requireTwoFactor' => $requireTwoFactor])
+                $this->tpl->render('auth')
             );
         }
 
@@ -310,7 +347,7 @@ class Service
         if ($requireTwoFactor && !$userInfo->getTwoFactorVerified()) {
             // 2FA required, but user not verified (yet)
             return new HtmlResponse(
-                $this->tpl->render('auth', ['requireTwoFactor' => true])
+                $this->tpl->render('two_factor')
             );
         }
 
