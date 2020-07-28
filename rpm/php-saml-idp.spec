@@ -1,8 +1,8 @@
-%global git 4e0065abdbb7c875443cc50eb0f53511360fcdb7
+%global git 4dd32a3002a44c038a61d89144268116c0da0f19
 
 Name:       php-saml-idp
 Version:    0.0.0
-Release:    0.100%{?dist}
+Release:    0.101%{?dist}
 Summary:    SAML IdP
 
 Group:      Applications/Internet
@@ -33,7 +33,7 @@ BuildRequires:  %{_bindir}/phpab
 #        "ext-spl": "*",
 #        "fkooman/otp-verifier": "^0.3",
 #        "ext-zlib": "*",
-#        "fkooman/secookie": "^4",
+#        "fkooman/secookie": "^5",
 #        "ircmaxell/password-compat": "^1.0",
 #        "paragonie/constant_time_encoding": "^1|^2",
 #        "paragonie/random_compat": ">=1",
@@ -50,8 +50,8 @@ BuildRequires:  php-spl
 BuildRequires:  php-composer(fkooman/otp-verifier) >= 0.3
 BuildRequires:  php-composer(fkooman/otp-verifier) < 0.4
 BuildRequires:  php-zlib
-BuildRequires:  php-composer(fkooman/secookie) >= 4
-BuildRequires:  php-composer(fkooman/secookie) < 5
+BuildRequires:  php-composer(fkooman/secookie) >= 5
+BuildRequires:  php-composer(fkooman/secookie) < 6
 BuildRequires:  php-composer(paragonie/constant_time_encoding)
 %if 0%{?fedora} < 28 && 0%{?rhel} < 8
 BuildRequires:  php-composer(paragonie/random_compat)
@@ -74,7 +74,7 @@ Requires:   httpd
 #        "ext-spl": "*",
 #        "fkooman/otp-verifier": "^0.3",
 #        "ext-zlib": "*",
-#        "fkooman/secookie": "^4",
+#        "fkooman/secookie": "^5",
 #        "ircmaxell/password-compat": "^1.0",
 #        "paragonie/constant_time_encoding": "^1|^2",
 #        "paragonie/random_compat": ">=1",
@@ -92,8 +92,8 @@ Requires:   php-spl
 Requires:   php-composer(fkooman/otp-verifier) >= 0.3
 Requires:   php-composer(fkooman/otp-verifier) < 0.4
 Requires:   php-zlib
-Requires:   php-composer(fkooman/secookie) >= 4
-Requires:   php-composer(fkooman/secookie) < 5
+Requires:   php-composer(fkooman/secookie) >= 5
+Requires:   php-composer(fkooman/secookie) < 6
 Requires:   php-composer(paragonie/constant_time_encoding)
 %if 0%{?fedora} < 28 && 0%{?rhel} < 8
 Requires:   php-composer(paragonie/random_compat)
@@ -173,6 +173,9 @@ fi
 %license LICENSE
 
 %changelog
+* Tue Jul 28 2020 François Kooman <fkooman@tuxed.net> - 0.0.0-0.101
+- rebuilt
+
 * Thu Feb 13 2020 François Kooman <fkooman@tuxed.net> - 0.0.0-0.100
 - rebuilt
 
